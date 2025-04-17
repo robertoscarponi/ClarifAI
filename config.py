@@ -11,3 +11,4 @@ if not gemini_api_key:
     raise ValueError("GEMINI_API_KEY non trovata nelle variabili d'ambiente.")
     exit(1)
 
+

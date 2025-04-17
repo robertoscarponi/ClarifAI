@@ -1,10 +1,15 @@
+import os
 from embeddings import logger, extract_text_from_pdf, chunk_text, generate_embeddings, store_embeddings_in_chromadb
 from retrieval import rewrite_query, HyDERetriever, generate_response
 
 def main():
     try:
+        # Recupera il percorso del PDF dalla variabile d'ambiente
+        pdf_path = os.environ.get("PDF_PATH")
+        if not pdf_path:
+            raise ValueError("La variabile d'ambiente PDF_PATH non è impostata.")
+            
         # Step 1: Extract and chunk text
-        pdf_path = r"/Users/robertoscarponi/Documents/Python_Projects/Dispense_EIF.pdf"
         logger.info(f"Starting process for PDF: {pdf_path}")
         text = extract_text_from_pdf(pdf_path)
         chunks = chunk_text(text)
@@ -16,7 +21,7 @@ def main():
         collection = store_embeddings_in_chromadb(chunks, chunk_embeddings)
 
         # Step 4: Rewrite the query
-        original_query = "Spiegami cos'è un titolo di stato"
+        original_query = "Cos'è il machine learning?"
         rewritten_query = rewrite_query(original_query)
         logger.info(f"Rewritten Query: {rewritten_query}")
 
@@ -45,6 +50,5 @@ def main():
     except Exception as e:
         logger.error(f"An error occurred: {e}", exc_info=True)
 
- 
 if __name__ == "__main__":
     main()
