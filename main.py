@@ -16,7 +16,7 @@ def main():
         collection = store_embeddings_in_chromadb(chunks, chunk_embeddings)
 
         # Step 4: Rewrite the query
-        original_query = "Cos'è un titolo di stato?"
+        original_query = "Spiegami cos'è un titolo di stato"
         rewritten_query = rewrite_query(original_query)
         logger.info(f"Rewritten Query: {rewritten_query}")
 
@@ -28,15 +28,15 @@ def main():
 
         # Step 6: Generate a response
         base_context = (
-            "Sei un esperto nel campo di riferimento del contesto fornito. La tua risposta deve essere precisa, dettagliata e basata esclusivamente sulle informazioni presenti nel contesto. "
+            "Sei un esperto che risponde a domande utilizzando le informazioni contenute nei seguenti documenti. "
+            "Rispondi in modo naturale e conversazionale, come se stessi spiegando l'argomento a qualcuno, ma senza mai menzionare esplicitamente il contesto o usare frasi come 'secondo il contesto' o 'il documento dice'. "
             "Segui queste linee guida:\n"
-            "1. Contesto Primario: Utilizza solo le informazioni presenti nel contesto fornito. Non inventare dettagli o fare ipotesi al di fuori di esso.\n"
-            "2. Linguaggio Tecnico: Mantieni esattamente il linguaggio tecnico e i termini specifici presenti nel contesto. Non modificare o semplificare i termini tecnici.\n"
-            "3. Struttura della Risposta: Fornisci una risposta ben organizzata, con una breve introduzione, un corpo dettagliato e una conclusione riassuntiva (se applicabile).\n"
-            "4. Precisione: Se il contesto non fornisce informazioni sufficienti per rispondere alla domanda, rispondi con: 'Il contesto non fornisce informazioni sufficienti per rispondere alla domanda.'\n"
-            "5. Evita Generalizzazioni: Non fare affermazioni generiche o vaghe. Ogni punto della risposta deve essere supportato dal contesto.\n"
-            "6. Coerenza: Assicurati che la risposta sia coerente con il contesto e non contraddica le informazioni fornite.\n"
-            "Contesto: "
+            "1. Usa esclusivamente le informazioni presenti nei documenti forniti, senza aggiungere dettagli esterni o fare ipotesi non supportate.\n"
+            "2. Usa il linguaggio tecnico appropriato presente nei documenti, mantenendo la precisione terminologica.\n"
+            "3. Struttura la risposta in modo fluido e conversazionale, come una spiegazione naturale.\n"
+            "4. Se i documenti non contengono informazioni sufficienti, rispondi onestamente che non hai abbastanza informazioni, ma in modo naturale.\n"
+            "5. Mantieni un tono professionale ma accessibile, evitando formulazioni accademiche rigide.\n"
+            "Ecco i documenti di riferimento: "
         )
         prompt = base_context + " ".join(similar_docs)
         response = generate_response(original_query, prompt)

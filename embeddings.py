@@ -32,13 +32,12 @@ def extract_text_from_pdf(pdf_path):
     logger.info("Text extraction complete.")
     return text
 
-#TO DO: sperimentare cambiando i parametri chunk_size e chunk_overlap
 def chunk_text(text):
     logger.info("Splitting text into chunks...")
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,  
         chunk_overlap=50,  
-        separators=["\n\n", "\n", " ", ""] 
+        separators=["\n\n", "\n", " ", ""]
     )
     chunks = text_splitter.split_text(text)
     logger.info(f"Text split into {len(chunks)} chunks.")
@@ -64,7 +63,6 @@ def generate_embeddings(texts):
                 cache_data = json.load(f)
                 embeddings.append(cache_data["embedding"])
         else:
-            # Se non in cache, genera l'embedding
             logger.info(f"Generating embedding for chunk {i+1}/{len(texts)}...")
             result = genai.embed_content(
                 model="models/text-embedding-004",
@@ -97,11 +95,12 @@ def store_embeddings_in_chromadb(chunks, chunk_embeddings):
     # Calcola hash per ogni chunk
     ids = [compute_chunk_hash(chunk) for chunk in chunks]
     
-    # Verifica se esistono già documenti con gli stessi ID
+    # Recupera gli ID esistenti con logging di debug
     existing_ids = set()
     try:
-        # Recupera tutti gli ID esistenti
-        all_ids = collection.get()["ids"]
+        result = collection.get()
+        all_ids = result.get("ids", [])
+        logger.info(f"Existing IDs in ChromaDB: {all_ids}")
         if all_ids:
             existing_ids = set(all_ids)
     except Exception as e:
@@ -119,6 +118,8 @@ def store_embeddings_in_chromadb(chunks, chunk_embeddings):
             new_embeddings.append(embedding)
             new_ids.append(id)
             new_metadatas.append({"source": "pdf"})
+        else:
+            logger.info(f"Skipping duplicate chunk with ID: {id[:8]}...")
     
     # Aggiungi solo i nuovi chunk
     if new_chunks:
@@ -129,10 +130,12 @@ def store_embeddings_in_chromadb(chunks, chunk_embeddings):
             metadatas=new_metadatas,
             ids=new_ids
         )
+        logger.info("ChromaDB updated.")
     else:
         logger.info("No new chunks to add to ChromaDB.")
     
     return collection
+
 
 
 
