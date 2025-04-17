@@ -27,8 +27,19 @@ def main():
         logger.info(f"Similar Documents: {similar_docs}")
 
         # Step 6: Generate a response
-        context = " ".join(similar_docs)
-        response = generate_response(original_query, context)
+        base_context = (
+            "Sei un esperto nel campo di riferimento del contesto fornito. La tua risposta deve essere precisa, dettagliata e basata esclusivamente sulle informazioni presenti nel contesto. "
+            "Segui queste linee guida:\n"
+            "1. Contesto Primario: Utilizza solo le informazioni presenti nel contesto fornito. Non inventare dettagli o fare ipotesi al di fuori di esso.\n"
+            "2. Linguaggio Tecnico: Mantieni esattamente il linguaggio tecnico e i termini specifici presenti nel contesto. Non modificare o semplificare i termini tecnici.\n"
+            "3. Struttura della Risposta: Fornisci una risposta ben organizzata, con una breve introduzione, un corpo dettagliato e una conclusione riassuntiva (se applicabile).\n"
+            "4. Precisione: Se il contesto non fornisce informazioni sufficienti per rispondere alla domanda, rispondi con: 'Il contesto non fornisce informazioni sufficienti per rispondere alla domanda.'\n"
+            "5. Evita Generalizzazioni: Non fare affermazioni generiche o vaghe. Ogni punto della risposta deve essere supportato dal contesto.\n"
+            "6. Coerenza: Assicurati che la risposta sia coerente con il contesto e non contraddica le informazioni fornite.\n"
+            "Contesto: "
+        )
+        prompt = base_context + " ".join(similar_docs)
+        response = generate_response(original_query, prompt)
         logger.info(f"Generated Response: {response}")
 
     except Exception as e:
