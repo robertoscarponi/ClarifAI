@@ -147,6 +147,30 @@ def store_embeddings_in_chromadb(chunks, chunk_embeddings):
     
     return collection
 
+def process_pdf_with_images(pdf_path):
+    """Elabora un PDF estraendo sia il testo che le immagini."""
+    # Estrai il testo come fai già
+    text = extract_text_from_pdf(pdf_path)
+    text_chunks = chunk_text(text)
+    
+    # Estrai e analizza le immagini
+    from extract_images import extract_images_from_pdf
+    from analyze_images import analyze_image
+    
+    image_paths = extract_images_from_pdf(pdf_path)
+    image_descriptions = []
+    
+    for img_path, page_num in image_paths:
+        description = analyze_image(img_path)
+        # Crea un chunk speciale per l'immagine con riferimento alla pagina
+        image_chunk = f"[IMMAGINE PAGINA {page_num+1}]: {description}"
+        image_descriptions.append(image_chunk)
+    
+    # Combina i chunk di testo e le descrizioni delle immagini
+    all_chunks = text_chunks + image_descriptions
+    
+    return all_chunks
+
 
 
 
