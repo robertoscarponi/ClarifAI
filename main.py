@@ -51,11 +51,23 @@ def main():
         tokens = count_tokens(prompt)
         logger.info(f"Il prompt contiene {tokens} token.")
 
+        # Salva il contesto in un file
+        save_context_to_file(prompt)
+
         response = generate_response(original_query, prompt)
         logger.info(f"Generated Response: {response}")
 
     except Exception as e:
         logger.error(f"An error occurred: {e}", exc_info=True)
+
+def save_context_to_file(context, filename="last_context.txt"):
+    """Salva il contesto in un file di testo, sovrascrivendo il file precedente."""
+    try:
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(context)
+        logger.info(f"Contesto salvato in {filename}")
+    except Exception as e:
+        logger.error(f"Errore nel salvare il contesto: {e}")
 
 if __name__ == "__main__":
     main()
