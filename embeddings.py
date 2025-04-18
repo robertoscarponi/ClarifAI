@@ -8,6 +8,7 @@ import os
 import hashlib
 import json
 from config import gemini_api_key
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ def extract_text_from_pdf(pdf_path):
 def chunk_text(text):
     logger.info("Splitting text into chunks...")
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,  
+        chunk_size=500,  # Modificato da 350 a 450
         chunk_overlap=50,  
         separators=["\n\n", "\n", " ", ""]
     )
@@ -44,6 +45,15 @@ def chunk_text(text):
     return chunks
 
 genai.configure(api_key=gemini_api_key) 
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+def call_embed_api(chunk):
+    """Funzione con retry automatico per chiamare l'API di embedding"""
+    result = genai.embed_content(
+        model="models/text-embedding-004",
+        content=chunk
+    )
+    return result
 
 def generate_embeddings(texts):
     """Genera embeddings per tutti i chunks usando cache locale."""
@@ -64,10 +74,8 @@ def generate_embeddings(texts):
                 embeddings.append(cache_data["embedding"])
         else:
             logger.info(f"Generating embedding for chunk {i+1}/{len(texts)}...")
-            result = genai.embed_content(
-                model="models/text-embedding-004",
-                content=chunk
-            )
+            # Usa la funzione con retry
+            result = call_embed_api(chunk) 
             embedding = result['embedding']
             embeddings.append(embedding)
             new_embeddings_count += 1
@@ -95,14 +103,19 @@ def store_embeddings_in_chromadb(chunks, chunk_embeddings):
     # Calcola hash per ogni chunk
     ids = [compute_chunk_hash(chunk) for chunk in chunks]
     
-    # Recupera gli ID esistenti con logging di debug
+    # Rimuovi duplicati dalla lista di chunk prima di provare ad aggiungerli
+    unique_data = {}
+    for chunk, embedding, chunk_id in zip(chunks, chunk_embeddings, ids):
+        if chunk_id not in unique_data:
+            unique_data[chunk_id] = (chunk, embedding)
+    
+    # Recupera gli ID esistenti
     existing_ids = set()
     try:
         result = collection.get()
-        all_ids = result.get("ids", [])
-        logger.info(f"Existing IDs in ChromaDB: {all_ids}")
-        if all_ids:
-            existing_ids = set(all_ids)
+        if result and "ids" in result:
+            existing_ids = set(result["ids"])
+            logger.info(f"Found {len(existing_ids)} existing IDs in ChromaDB")
     except Exception as e:
         logger.warning(f"Error retrieving existing IDs: {e}")
     
@@ -112,14 +125,12 @@ def store_embeddings_in_chromadb(chunks, chunk_embeddings):
     new_ids = []
     new_metadatas = []
     
-    for chunk, embedding, id in zip(chunks, chunk_embeddings, ids):
-        if id not in existing_ids:
+    for chunk_id, (chunk, embedding) in unique_data.items():
+        if chunk_id not in existing_ids:
             new_chunks.append(chunk)
             new_embeddings.append(embedding)
-            new_ids.append(id)
+            new_ids.append(chunk_id)
             new_metadatas.append({"source": "pdf"})
-        else:
-            logger.info(f"Skipping duplicate chunk with ID: {id[:8]}...")
     
     # Aggiungi solo i nuovi chunk
     if new_chunks:
