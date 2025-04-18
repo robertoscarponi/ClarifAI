@@ -35,17 +35,37 @@ class HyDERetriever:
         logger.info("Hypothetical document generated.")
         return response.text
 
-    def retrieve(self, query, k=3):
+    def retrieve(self, query, max_tokens=8000, k=10):  # Modificato da 15 a 10
         logger.info("Retrieving relevant documents using HyDE...")
         hypothetical_doc = self.generate_hypothetical_document(query)
         hypothetical_embedding = generate_embeddings([hypothetical_doc])[0]
+        
+        # Recupera più documenti di quelli che potrebbero servire
         results = self.collection.query(
             query_embeddings=[hypothetical_embedding],
             n_results=k
         )
-        similar_docs = results["documents"][0] 
-        logger.info(f"Retrieved {len(similar_docs)} relevant documents.")
-        return similar_docs, hypothetical_doc
+        candidate_docs = results["documents"][0]
+        
+        # Calcola quanto spazio abbiamo per i documenti nel contesto
+        from utils import count_tokens
+        
+        # Considera il prompt di base (ad es. le istruzioni al modello)
+        base_context_tokens = 500  # Stima per le istruzioni al modello
+        
+        # Seleziona documenti fino a raggiungere il limite di token
+        selected_docs = []
+        current_tokens = base_context_tokens
+        
+        for doc in candidate_docs:
+            doc_tokens = count_tokens(doc)
+            if current_tokens + doc_tokens > max_tokens - 500:  # 500 token buffer per la risposta
+                break
+            selected_docs.append(doc)
+            current_tokens += doc_tokens
+        
+        logger.info(f"Retrieved {len(selected_docs)} relevant documents within token budget. Total tokens: {current_tokens}")
+        return selected_docs, hypothetical_doc
 
 
 def generate_response(query, context):
