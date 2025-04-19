@@ -1,5 +1,5 @@
 import os
-from embeddings import logger, extract_text_from_pdf, chunk_text, generate_embeddings, store_embeddings_in_chromadb
+from embeddings import logger, extract_text_from_pdf, chunk_text, generate_embeddings, store_embeddings_in_chromadb, process_pdf_with_images
 from retrieval import rewrite_query, HyDERetriever, generate_response
 from utils import count_tokens  # Importa la funzione di conteggio token
 
@@ -10,10 +10,9 @@ def main():
         if not pdf_path:
             raise ValueError("La variabile d'ambiente PDF_PATH non è impostata.")
             
-        # Step 1: Extract and chunk text
+        # Step 1: Extract and chunk text (with images)
         logger.info(f"Starting process for PDF: {pdf_path}")
-        text = extract_text_from_pdf(pdf_path)
-        chunks = chunk_text(text)
+        chunks = process_pdf_with_images(pdf_path)
 
         # Step 2: Generate embeddings
         chunk_embeddings = generate_embeddings(chunks)
@@ -22,7 +21,7 @@ def main():
         collection = store_embeddings_in_chromadb(chunks, chunk_embeddings)
 
         # Step 4: Rewrite the query
-        original_query = "Come funziona il processo go-back-n?"  # Example query
+        original_query = "Mi spieghi l'immagine a pagina 19?"  # Example query
         rewritten_query = rewrite_query(original_query)
         logger.info(f"Rewritten Query: {rewritten_query}")
 
