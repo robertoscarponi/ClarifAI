@@ -21,6 +21,10 @@ def extract_images_from_pdf(pdf_path, output_dir="extracted_images"):
             # Crea un oggetto immagine PIL
             image = Image.open(io.BytesIO(image_bytes))
             
+            # Converti CMYK in RGB se necessario
+            if image.mode == 'CMYK':
+                image = image.convert('RGB')
+            
             # Salva l'immagine
             image_filename = f"page_{page_num+1}_img_{img_index+1}.png"
             image_path = os.path.join(output_dir, image_filename)
