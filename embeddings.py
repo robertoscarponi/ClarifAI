@@ -153,23 +153,39 @@ def process_pdf_with_images(pdf_path):
     text = extract_text_from_pdf(pdf_path)
     text_chunks = chunk_text(text)
     
-    # Estrai e analizza le immagini
-    from extract_images import extract_images_from_pdf
-    from analyze_images import analyze_image
+    # Verifica se il database esiste già - in questo caso salta l'analisi delle immagini
+    if os.path.exists(PERSIST_DIR) and os.listdir(PERSIST_DIR):
+        logger.info("Database esistente trovato, saltando l'analisi delle immagini")
+        return text_chunks
     
-    image_paths = extract_images_from_pdf(pdf_path)
-    image_descriptions = []
+    # Estrai e analizza le immagini solo durante la prima indicizzazione
+    try:
+        from extract_images import extract_images_from_pdf
+        from analyze_images import analyze_image
+        import time
+        
+        logger.info("Estraendo le immagini dal PDF...")
+        image_paths = extract_images_from_pdf(pdf_path)
+        image_descriptions = []
+        
+        # Limita il numero di immagini da analizzare in una singola esecuzione
+        max_images = 5  # Imposta un limite per sessione
+        logger.info(f"Analizzando {min(max_images, len(image_paths))} immagini di {len(image_paths)} totali")
+        
+        for i, (img_path, page_num) in enumerate(image_paths[:max_images]):
+            logger.info(f"Analizzando immagine {i+1}/{min(max_images, len(image_paths))}, pagina {page_num+1}")
+            description = analyze_image(img_path)
+            image_chunk = f"[IMMAGINE PAGINA {page_num+1}]: {description}"
+            image_descriptions.append(image_chunk)
+            time.sleep(4)  # Aggiungi un ritardo di 4 secondi tra le analisi
+        
+        # Combina i chunk di testo e le descrizioni delle immagini
+        all_chunks = text_chunks + image_descriptions
+        return all_chunks
     
-    for img_path, page_num in image_paths:
-        description = analyze_image(img_path)
-        # Crea un chunk speciale per l'immagine con riferimento alla pagina
-        image_chunk = f"[IMMAGINE PAGINA {page_num+1}]: {description}"
-        image_descriptions.append(image_chunk)
-    
-    # Combina i chunk di testo e le descrizioni delle immagini
-    all_chunks = text_chunks + image_descriptions
-    
-    return all_chunks
+    except Exception as e:
+        logger.warning(f"Errore durante l'elaborazione delle immagini: {e}. Procedendo solo con l'analisi del testo.")
+        return text_chunks
 
 
 
