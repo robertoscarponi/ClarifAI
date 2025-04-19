@@ -1,4 +1,5 @@
 import os
+import re
 from embeddings import logger, extract_text_from_pdf, chunk_text, generate_embeddings, store_embeddings_in_chromadb, process_pdf_with_images
 from retrieval import rewrite_query, HyDERetriever, generate_response
 from utils import count_tokens  # Importa la funzione di conteggio token
@@ -20,8 +21,46 @@ def main():
         # Step 3: Store embeddings in ChromaDB
         collection = store_embeddings_in_chromadb(chunks, chunk_embeddings)
 
-        # Step 4: Rewrite the query
-        original_query = "Mi spieghi l'immagine a pagina 19?"  # Example query
+        # Step 4: Gestione input utente
+        original_query = input("Inserisci la tua domanda: ")
+        
+        # Verifica se la query riguarda un'immagine
+        is_image_query = re.search(r'immag|figur|schem|diagram', original_query.lower()) is not None
+        image_context = ""
+        
+        # Se riguarda un'immagine, verifica se è specificata la pagina
+        if is_image_query:
+            page_match = re.search(r'pagina\s+(\d+)', original_query.lower())
+            
+            # Se non è specificata la pagina, chiedi all'utente
+            if not page_match:
+                page_number = input("La tua domanda riguarda un'immagine. Quale pagina? ")
+                try:
+                    page_to_analyze = int(page_number) - 1  # Converti in base 0
+                    original_query += f" a pagina {page_number}"
+                except ValueError:
+                    logger.error("Numero di pagina non valido")
+                    return
+            else:
+                page_to_analyze = int(page_match.group(1)) - 1
+                
+            # Renderizza e analizza la pagina specifica
+            from extract_images import render_pdf_pages
+            from analyze_images import analyze_image
+            
+            try:
+                logger.info(f"Renderizzando la pagina {page_to_analyze + 1}...")
+                rendered_pages = render_pdf_pages(pdf_path, pages=[page_to_analyze])
+                
+                if rendered_pages:
+                    page_image_path, _ = rendered_pages[0]
+                    logger.info(f"Analizzando la pagina {page_to_analyze + 1}...")
+                    page_description = analyze_image(page_image_path)
+                    image_context = f"[DESCRIZIONE PAGINA {page_to_analyze + 1}]: {page_description}"
+            except Exception as e:
+                logger.error(f"Errore durante l'analisi dell'immagine: {e}")
+
+        # Riscrittura della query
         rewritten_query = rewrite_query(original_query)
         logger.info(f"Rewritten Query: {rewritten_query}")
 
@@ -30,6 +69,10 @@ def main():
         similar_docs, hypothetical_doc = hyde_retriever.retrieve(rewritten_query)
         logger.info(f"Hypothetical Document: {hypothetical_doc}")
         logger.info(f"Similar Documents: {similar_docs}")
+
+        # Aggiungi il contesto dell'immagine se disponibile
+        if image_context:
+            similar_docs = [image_context] + similar_docs
 
         # Step 6: Generate a response
         base_context = (
