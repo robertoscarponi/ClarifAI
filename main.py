@@ -25,7 +25,7 @@ def main():
         original_query = input("Inserisci la tua domanda: ")
         
         # Verifica se la query riguarda un'immagine
-        is_image_query = re.search(r'immag|figur|schem|diagram', original_query.lower()) is not None
+        is_image_query = re.search(r'immag|figur|schem|diagram|grafic|foto', original_query.lower()) is not None
         image_context = ""
         
         # Se riguarda un'immagine, verifica se è specificata la pagina
