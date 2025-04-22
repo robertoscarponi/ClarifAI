@@ -4,3 +4,4 @@ venv/
 __pycache__/
 /cache/
 /chromadb_store/
+last_context.txt
