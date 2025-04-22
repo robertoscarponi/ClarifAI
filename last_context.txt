@@ -1,0 +1,78 @@
+Sei un esperto che risponde a domande utilizzando le informazioni contenute nei seguenti documenti. Rispondi in modo naturale e conversazionale, come se stessi spiegando l'argomento a qualcuno, ma senza mai menzionare esplicitamente il contesto o usare frasi come 'secondo il contesto' o 'il documento dice'. Segui queste linee guida:
+1. Usa esclusivamente le informazioni presenti nei documenti forniti, senza aggiungere dettagli esterni o fare ipotesi non supportate.
+2. Non escludere mai informazioni importanti che contribuiscono alla comprensione del tema richiesto nella domanda.
+3. Usa il linguaggio tecnico appropriato presente nei documenti, mantenendo la precisione terminologica.
+4. Struttura la risposta in modo fluido e conversazionale, come una spiegazione naturale.
+5. Se i documenti non contengono informazioni sufficienti, rispondi onestamente che non hai abbastanza informazioni, ma in modo naturale.
+6. Mantieni un tono professionale ma accessibile, evitando formulazioni accademiche rigide.
+Ecco i documenti di riferimento: La Figura 3.21 mostra invece l’efficienza dei protocolli nel caso di una probabilità di errore 
+p = 10–4, facendo quindi riferimento a un collegamento di qualità intermedia. Ferma restando 
+la migliore efficienza dei protocolli ARQ rispetto al protocollo stop and wait , si nota ora il 
+miglioramento di prestazioni fornito dal protocollo selective repeat , specialmente per una 
+grande apertura della finestra. Con numerazione di UI a 7 bit, il protocollo SR risulta sempre ARQ  utilizzando le espressioni fin qui derivate. Sono stati selezionati i seguenti parametri: 
+lunghezza dell’UI Lu = 256 bit, apertura della finestra di trasmissione Ws = 7, 127 per il pro -
+tocollo go-back-n  e Ws = Wr = 4, 64 per il protocollo selective repeat , che corrispondono a 
+richiedere la massima efficienza dei due protocolli con numerazione di UI a b = 3 e b = 7 bit. 
+L ’assunzione di tempi trascurabili di elaborazione e di trasmissione dei riscontri ( Tp = Ta H 0) Tipi di protocolli ARQ
+Nell’ambito dei protocolli continuous ARQ  sono stati definiti due protocolli denomina-
+ti “go-back-n” ( GBN) e “selective repeat” (SR), che utilizzano riscontri positivi  (acknow -
+ledgment , ACK) e riscontri negativi  (negative acknowledgment , NACK) con il seguente 
+significato:
+• ACK i viene emesso per segnalare la corretta ricezione dell’UI numero i  e indica 
+anche che tutte le UI fino all’UI numero i sono state ricevute correttamente3 (ACK 
+cumulativo ); • selective reject, SREJ: segnala la ricezione di una trama fuori sequenza (NACK), se il 
+protocollo ARQ implementato è quello selective repeat , richiedendo la ritrasmissione 
+di una specifica trama, cio è quella con numero di sequenza N(R); il protocollo prevede 
+che con una trama SREJ si possa richiedere anche la ritrasmissione di ulteriori trame 
+non ricevute, in aggiunta a quella indicata nel campo N(R), indicando il loro numero 
+nel campo informativo della trama stessa. l’eventuale mancata ricezione di UI. 
+La classe di protocolli che viene qui descritta va sotto il nome di automatic repeat request  
+(ARQ). Si descriveranno in particolare due tipi di protocolli per comunicazione su linea pun -
+to-punto: stop and wait  (S&W) e continuous ARQ . Nel primo caso il trasmettitore invia un’UI 
+e aspetta il riscontro prima di emetterne un’altra, mentre nel secondo è ammessa la trasmis - I protocolli GBN e SR si differenziano nella modalità di gestione degli eventi di errore di 
+trasmissione delle UI. Un terzo tipo di protocollo continuous ARQ  che trova larga applicazio -
+ne nelle reti odierne consiste nel prevedere che i riscontri siano solo di tipo positivo (ACK), 
+delegando così al solo meccanismo del time-out la gestione della ritrasmissione delle UI che 
+non vengono ricevute correttamente a destinazione. )3.11( Ws12a+≥ .           
+Tu
+WsTu
+Ta0
+1
+2
+3ACK0
+ACK1
+ACK2
+ACK3B A
+Tu
+WsTu0
+1
+2
+3TaACK0
+ACK1
+ACK2
+ACK3B A
+(a) (b)
+Figura 3.8 Sliding window: Ws = 4 (a) e Ws = 2 (b).
+PattavinaReti2021.indb   106PattavinaReti2021.indb   106 14/01/2022   16:08:2814/01/2022   16:08:283.2 Protocolli continuous ARQ  107
+Due stazioni A e B sono collegate da un sistema di trasmissione dati bidirezionale il cui 
+protocollo ARQ è caratterizzato dai seguenti parametri:
+• dimensione fissa delle UI, Lu = 4 kbyte, dalla sequenza dei bit di informazione da proteggere. Il trasferimento senza successo di un’u -
+nità informativa dal trasmettitore al ricevitore implica che la stessa venga ritrasmessa una o 
+più volte in presenza di errori. Ne consegue che, se si utilizzano tecniche ARQ, la quantità di 
+informazione trasmessa non è più indipendente dal tasso di errore. Si può ancora osservare che 
+le strategie ARQ richiedono la disponibilità di unità di memoria dal lato trasmissione, dove costante e, a meno di diversa asserzione, che vi sia un collegamento diretto tra le stazioni A 
+e B.
+Automatic
+repeat request
+Continuous
+ARQStop and wait
+Selective
+repeatGo-back- n
+Figura 3.1 Protocolli di tipo ARQ.3.1 Protocollo stop and wait
+3.2 Protocolli continuous ARQ
+PattavinaReti2021.indb   94PattavinaReti2021.indb   94 14/01/2022   16:08:2414/01/2022   16:08:243.1 Protocollo stop and wait  95
+3.1 Protocollo stop and wait sione continua di UI che vengono opportunamente numerate. In entrambi i casi faremo riferi -
+mento prima al trasferimento di UI prive di errori e successivamente esamineremo il caso in 
+cui uno o più errori colpiscono l’unità informativa che viene trasferita. Le due diverse tecniche 
+che vengono adottate per recuperare UI affette da errori sono definite dai protocolli go-back-n  
+e selective repeat . La classificazione dei protocolli di tipo ARQ è riassunta nella Figura 3.1.
