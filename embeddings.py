@@ -36,7 +36,7 @@ def extract_text_from_pdf(pdf_path):
 def chunk_text(text):
     logger.info("Splitting text into chunks...")
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,  # Modificato da 350 a 450
+        chunk_size=500,  
         chunk_overlap=50,  
         separators=["\n\n", "\n", " ", ""]
     )
@@ -148,44 +148,63 @@ def store_embeddings_in_chromadb(chunks, chunk_embeddings):
     return collection
 
 def process_pdf_with_images(pdf_path):
-    """Elabora un PDF estraendo sia il testo che le immagini."""
-    # Estrai il testo come fai già
+    """Elabora un PDF estraendo il testo o caricandolo dalla cache."""
+    # Prova a caricare i chunks dalla cache
+    cached_chunks = get_pdf_cached_chunks(pdf_path)
+    if (cached_chunks):
+        logger.info(f"Utilizzando {len(cached_chunks)} chunks dalla cache")
+        return cached_chunks
+    
+    # Se non ci sono chunks in cache, estrai il testo
+    logger.info(f"Nessun chunk in cache trovato per {os.path.basename(pdf_path)}, procedendo con l'estrazione")
     text = extract_text_from_pdf(pdf_path)
     text_chunks = chunk_text(text)
     
-    # Verifica se il database esiste già - in questo caso salta l'analisi delle immagini
-    if os.path.exists(PERSIST_DIR) and os.listdir(PERSIST_DIR):
-        logger.info("Database esistente trovato, saltando l'analisi delle immagini")
-        return text_chunks
+    # Salva i chunks per utilizzo futuro
+    save_pdf_chunks(pdf_path, text_chunks)
     
-    # Estrai e analizza le immagini solo durante la prima indicizzazione
-    try:
-        from extract_images import extract_images_from_pdf
-        from analyze_images import analyze_image
-        import time
-        
-        logger.info("Estraendo le immagini dal PDF...")
-        image_paths = extract_images_from_pdf(pdf_path)
-        image_descriptions = []
-        
-        # Limita il numero di immagini da analizzare in una singola esecuzione
-        max_images = 5  # Imposta un limite per sessione
-        logger.info(f"Analizzando {min(max_images, len(image_paths))} immagini di {len(image_paths)} totali")
-        
-        for i, (img_path, page_num) in enumerate(image_paths[:max_images]):
-            logger.info(f"Analizzando immagine {i+1}/{min(max_images, len(image_paths))}, pagina {page_num+1}")
-            description = analyze_image(img_path)
-            image_chunk = f"[IMMAGINE PAGINA {page_num+1}]: {description}"
-            image_descriptions.append(image_chunk)
-            time.sleep(4)  # Aggiungi un ritardo di 4 secondi tra le analisi
-        
-        # Combina i chunk di testo e le descrizioni delle immagini
-        all_chunks = text_chunks + image_descriptions
-        return all_chunks
+    return text_chunks
+
+import os
+import hashlib
+import json
+import pathlib
+
+# Aggiungi questa nuova funzione
+def get_pdf_cached_chunks(pdf_path):
+    """Recupera i chunks salvati per un PDF specifico o restituisce None se non esistono."""
+    pdf_filename = os.path.basename(pdf_path)
+    pdf_name = os.path.splitext(pdf_filename)[0]
+    pdf_hash = hashlib.md5(pdf_path.encode()).hexdigest()[:10]
     
-    except Exception as e:
-        logger.warning(f"Errore durante l'elaborazione delle immagini: {e}. Procedendo solo con l'analisi del testo.")
-        return text_chunks
+    # Directory per i chunks di questo PDF specifico
+    pdf_chunks_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pdf_chunks")
+    os.makedirs(pdf_chunks_dir, exist_ok=True)
+    
+    chunks_file = os.path.join(pdf_chunks_dir, f"{pdf_name}_{pdf_hash}.json")
+    
+    if os.path.exists(chunks_file):
+        logger.info(f"Trovati chunks memorizzati per {pdf_filename}, caricando dalla cache...")
+        with open(chunks_file, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return None
+
+# Aggiungi questa nuova funzione
+def save_pdf_chunks(pdf_path, chunks):
+    """Salva i chunks estratti da un PDF specifico."""
+    pdf_filename = os.path.basename(pdf_path)
+    pdf_name = os.path.splitext(pdf_filename)[0]
+    pdf_hash = hashlib.md5(pdf_path.encode()).hexdigest()[:10]
+    
+    # Directory per i chunks di questo PDF specifico
+    pdf_chunks_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pdf_chunks")
+    os.makedirs(pdf_chunks_dir, exist_ok=True)
+    
+    chunks_file = os.path.join(pdf_chunks_dir, f"{pdf_name}_{pdf_hash}.json")
+    
+    logger.info(f"Salvando {len(chunks)} chunks per {pdf_filename}...")
+    with open(chunks_file, 'w', encoding='utf-8') as f:
+        json.dump(chunks, f, ensure_ascii=False)
 
 
 
