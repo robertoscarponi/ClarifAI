@@ -3,3 +3,5 @@ langchain
 google-generativeai
 chromadb
 python-dotenv
+PIL
+PyMuPDF
