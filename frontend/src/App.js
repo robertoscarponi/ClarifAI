@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios';
-import { FaArrowRight, FaBook, FaRedo } from 'react-icons/fa';
+import { FaArrowRight, FaRedo } from 'react-icons/fa';
+import ClarifAILogo from './LogoAI';
 
 const API_BASE_URL = 'http://127.0.0.1:5001'; // Usa la nuova porta
 
@@ -169,12 +170,12 @@ function App() {
   };
 
   return (
-    <div className="exam-buddy">
+    <div className="clarif-ai">
       {/* Header */}
       <header className="header">
         <div className="logo">
-          <FaBook className="book-logo" />
-          <h1>Exam Buddy</h1>
+          <ClarifAILogo className="logo-svg" />
+          <h1>ClarifAI</h1>
         </div>
         <nav className="navigation">
           <ul>
@@ -194,7 +195,7 @@ function App() {
               <h1>Your AI Study Assistant</h1>
               <p className="subtitle">
                 Ask any exam question and get instant, accurate answers to help you prepare for your exams.
-                <br />Exam Buddy uses AI to provide comprehensive explanations tailored to your studies.
+                <br />ClarifAI uses AI to provide comprehensive explanations tailored to your studies.
               </p>
               {error && (
                 <div className="init-error">
@@ -210,7 +211,7 @@ function App() {
               <h2>Ask Your Question</h2>
               <div className="search-container">
                 <div className="search-icon">
-                  <FaBook />
+                  <ClarifAILogo className="search-logo-icon" />
                 </div>
                 <input
                   type="text"
@@ -231,7 +232,7 @@ function App() {
 
             <section className="bottom-section">
               <div className="book-icon-container">
-                <FaBook className="big-book-icon" />
+                <ClarifAILogo className="big-logo-icon" />
               </div>
               <h2>Ask Your Exam Questions</h2>
               <p>

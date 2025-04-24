@@ -4,10 +4,23 @@
   padding: 0;
 }
 
+/* Nuovi colori da applicare nel CSS */
+:root {
+  --primary-orange: #F2994A;
+  --primary-coral: #E15A46;
+  --primary-teal: #48A1B0;
+  --primary-blue: #366B95;
+  --primary-dark-blue: #274676;
+  --background-cream: #F9F9F7;
+  --text-dark: #333333;
+  --text-medium: #666666;
+  --text-light: #999999;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color: #f5f8ff;
-  color: #333;
+  background-color: var(--background-cream);
+  color: var(--text-dark);
   line-height: 1.6;
 }
 
@@ -125,7 +138,7 @@ body {
 
 .book-item.selected {
   background-color: #e6f7ff;
-  border-left: 3px solid #7b68ee;
+  border-left: 3px solid var(--primary-coral);
 }
 
 .book-icon {
@@ -156,7 +169,7 @@ body {
   display: flex;
   align-items: center;
   padding: 15px 20px;
-  background-color: #1890ff;
+  background-color: var(--primary-teal);
   color: white;
 }
 
@@ -190,7 +203,7 @@ body {
 
 .welcome-message h2 {
   margin-bottom: 10px;
-  color: #7b68ee;
+  color: var(--primary-coral);
 }
 
 .welcome-message p {
@@ -207,7 +220,7 @@ body {
 
 .message.user {
   align-self: flex-end;
-  background-color: #7b68ee;
+  background-color: var(--primary-coral);
   color: white;
   border-bottom-right-radius: 4px;
 }
@@ -229,8 +242,8 @@ body {
 
 .message.system {
   background-color: #e6f7ff;
-  color: #7b68ee;
-  border: 1px solid #91d5ff;
+  color: var(--primary-teal);
+  border: 1px solid var(--primary-teal);
 }
 
 .loading-indicator {
@@ -285,7 +298,7 @@ body {
 }
 
 .send-btn {
-  background-color: #7b68ee;
+  background-color: var(--primary-coral);
   color: white;
   border: none;
   border-radius: 20px;
@@ -368,7 +381,7 @@ body {
   }
 }
 
-.exam-buddy {
+.clarif-ai {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -412,11 +425,11 @@ body {
 }
 
 .navigation a.active {
-  color: #7b68ee;
+  color: var(--primary-coral);
 }
 
 .get-started-btn {
-  background-color: #7b68ee;
+  background-color: var(--primary-coral);
   color: white !important;
   padding: 0.5rem 1rem;
   border-radius: 2rem;
@@ -424,7 +437,7 @@ body {
 }
 
 .get-started-btn:hover {
-  background-color: #6a5acd;
+  background-color: var(--primary-orange);
 }
 
 /* Main content styles */
@@ -479,7 +492,7 @@ body {
 .search-icon {
   position: absolute;
   left: 1rem;
-  color: #7b68ee;
+  color: var(--primary-coral);
 }
 
 .search-container input {
@@ -492,13 +505,13 @@ body {
 }
 
 .search-container input:focus {
-  border-color: #7b68ee;
+  border-color: var(--primary-teal);
 }
 
 .search-btn {
   position: absolute;
   right: 0.5rem;
-  background-color: #7b68ee;
+  background-color: var(--primary-coral);
   color: white;
   border: none;
   border-radius: 50%;
@@ -512,7 +525,7 @@ body {
 }
 
 .search-btn:hover {
-  background-color: #6a5acd;
+  background-color: var(--primary-orange);
 }
 
 .search-btn:disabled {
@@ -563,7 +576,7 @@ body {
 .chat-header {
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #eee;
-  background-color: #7b68ee;
+  background-color: var(--primary-teal);
   color: white;
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
@@ -577,7 +590,7 @@ body {
   position: fixed;
   top: 1rem;
   left: 1rem;
-  background: #7b68ee;
+  background: var(--primary-coral);
   color: white;
   border: none;
   border-radius: 50%;
@@ -636,7 +649,7 @@ body {
 .retry-btn {
   display: inline-flex;
   align-items: center;
-  background-color: #7b68ee;
+  background-color: var(--primary-coral);
   color: white;
   border: none;
   border-radius: 2rem;
@@ -662,7 +675,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #7b68ee;
+  background-color: var(--primary-coral);
   color: white;
   border: none;
   border-radius: 0.25rem;
@@ -676,4 +689,20 @@ body {
   padding: 1rem;
   text-align: center;
   color: #999;
+}
+
+/* Nuovi stili per il logo */
+.logo-svg {
+  width: 40px;
+  height: 40px;
+}
+
+.search-logo-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.big-logo-icon {
+  width: 60px;
+  height: 60px;
 }
