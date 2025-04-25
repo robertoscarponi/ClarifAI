@@ -448,6 +448,7 @@ body {
   align-items: center;
   padding: 2rem;
   margin-top: 1rem;
+  transition: margin-left 0.3s ease;
 }
 
 .hero-section {
@@ -705,4 +706,29 @@ body {
 .big-logo-icon {
   width: 60px;
   height: 60px;
+}
+
+/* Aggiungi queste regole CSS */
+
+/* Adatta il main container quando la sidebar è aperta */
+.main-container.sidebar-open {
+  margin-left: 300px;
+  transition: margin-left 0.3s ease;
+}
+
+/* Modifica per il pulsante della sidebar in modo che sia sempre visibile */
+.sidebar-toggle {
+  z-index: 1001;
+}
+
+/* Regola la transizione del contenuto principale */
+.main-container {
+  transition: margin-left 0.3s ease;
+}
+
+/* Responsive design per quando la sidebar è aperta */
+@media (max-width: 768px) {
+  .main-container.sidebar-open {
+    margin-left: 0;
+  }
 }

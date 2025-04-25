@@ -7,6 +7,7 @@ import ClarifAILogo from './LogoAI';
 const API_BASE_URL = 'http://127.0.0.1:5001'; // Usa la nuova porta
 
 function App() {
+  // Stato esistente
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [books, setBooks] = useState([]);
   const [selectedBook, setSelectedBook] = useState(null);
@@ -19,7 +20,7 @@ function App() {
   const [showChat, setShowChat] = useState(false);
   const [initialized, setInitialized] = useState(false);
 
-  // Carica il libro e lo imposta all'avvio, ma non blocca l'applicazione se fallisce
+  // Carica il libro e lo imposta all'avvio
   useEffect(() => {
     fetchAndSelectDefaultBook();
   }, []);
@@ -49,7 +50,7 @@ function App() {
       }
     } catch (error) {
       console.error('Error initializing app:', error);
-      // Imposta un messaggio di errore più specifico in base al tipo di errore
+      // Imposta un messaggio di errore più specifico
       if (error.code === 'ECONNABORTED') {
         setError('Timeout di connessione al server. Verifica che il backend sia in esecuzione.');
       } else if (error.response) {
@@ -73,6 +74,7 @@ function App() {
   };
 
   const sendMessage = async () => {
+    // Funzione esistente... non modificata
     if (!currentMessage.trim()) return;
     
     const userMessage = currentMessage;
@@ -125,6 +127,7 @@ function App() {
   };
 
   const handlePageSubmit = async () => {
+    // Funzione esistente... non modificata
     if (!pageNumber.trim()) return;
     
     const lastUserMessage = messages[messages.length - 1].content;
@@ -135,6 +138,7 @@ function App() {
   };
 
   const sendQueryToBackend = async (query, page = null) => {
+    // Funzione esistente... non modificata
     try {
       setLoading(true);
       
@@ -186,9 +190,47 @@ function App() {
           </ul>
         </nav>
       </header>
+      
+      {/* Sidebar Toggle - Spostato fuori dalla condizione showChat */}
+      <button className="sidebar-toggle" onClick={toggleSidebar}>
+        {isSidebarOpen ? '✕' : '☰'}
+      </button>
+      
+      {/* Sidebar - Spostato fuori dalla condizione showChat */}
+      <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <h2>Materiale di Studio</h2>
+          <button className="close-btn" onClick={toggleSidebar}>×</button>
+        </div>
+        <div className="sidebar-content">
+          <ul className="book-list">
+            {books.length > 0 ? (
+              books.map((book) => (
+                <li 
+                  key={book.id} 
+                  className="book-item selected"
+                >
+                  <div className="book-icon">📚</div>
+                  <span>{book.name}</span>
+                </li>
+              ))
+            ) : (
+              <li className="no-books">Nessun libro caricato</li>
+            )}
+          </ul>
+          {error && (
+            <div className="sidebar-error">
+              <p>{error}</p>
+              <button onClick={fetchAndSelectDefaultBook} className="reload-btn">
+                <FaRedo /> Riprova
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Main Content */}
-      <main className="main-container">
+      <main className={`main-container ${isSidebarOpen ? 'sidebar-open' : ''}`}>
         {!showChat ? (
           <>
             <section className="hero-section">
@@ -241,122 +283,81 @@ function App() {
             </section>
           </>
         ) : (
-          <>
-            {/* Sidebar Toggle - manteniamo la barra laterale come elemento estetico */}
-            <button className="sidebar-toggle" onClick={toggleSidebar}>
-              {isSidebarOpen ? '✕' : '☰'}
-            </button>
+          <div className={`chat-section ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+            <header className="chat-header">
+              <h1>{selectedBook ? selectedBook.name : 'AI Study Assistant'}</h1>
+            </header>
             
-            {/* Sidebar - puramente estetica */}
-            <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-              <div className="sidebar-header">
-                <h2>Materiale di Studio</h2>
-                <button className="close-btn" onClick={toggleSidebar}>×</button>
-              </div>
-              <div className="sidebar-content">
-                <ul className="book-list">
-                  {books.length > 0 ? (
-                    books.map((book) => (
-                      <li 
-                        key={book.id} 
-                        className="book-item selected"
-                      >
-                        <div className="book-icon">📚</div>
-                        <span>{book.name}</span>
-                      </li>
-                    ))
-                  ) : (
-                    <li className="no-books">Nessun libro caricato</li>
+            <div className="messages-area">
+              {messages.length === 0 ? (
+                <div className="welcome-message">
+                  <h2>Benvenuto nel tuo assistente di studio</h2>
+                  <p>Fai qualsiasi domanda sul materiale di studio</p>
+                  {error && (
+                    <div className="init-error">
+                      <p>{error}</p>
+                      <button onClick={fetchAndSelectDefaultBook} className="retry-btn">
+                        <FaRedo className="retry-icon" /> Riprova connessione
+                      </button>
+                    </div>
                   )}
-                </ul>
-                {error && (
-                  <div className="sidebar-error">
-                    <p>{error}</p>
-                    <button onClick={fetchAndSelectDefaultBook} className="reload-btn">
-                      <FaRedo /> Riprova
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Chat Section */}
-            <div className={`chat-section ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-              <header className="chat-header">
-                <h1>{selectedBook ? selectedBook.name : 'AI Study Assistant'}</h1>
-              </header>
-              
-              <div className="messages-area">
-                {messages.length === 0 ? (
-                  <div className="welcome-message">
-                    <h2>Benvenuto nel tuo assistente di studio</h2>
-                    <p>Fai qualsiasi domanda sul materiale di studio</p>
-                    {error && (
-                      <div className="init-error">
-                        <p>{error}</p>
-                        <button onClick={fetchAndSelectDefaultBook} className="retry-btn">
-                          <FaRedo className="retry-icon" /> Riprova connessione
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  messages.map((msg, index) => (
-                    <div key={index} className={`message ${msg.type}`}>
-                      <div className="message-content">
-                        {msg.content}
-                      </div>
-                    </div>
-                  ))
-                )}
-                {loading && (
-                  <div className="message bot loading">
-                    <div className="loading-indicator">
-                      <div className="dot"></div>
-                      <div className="dot"></div>
-                      <div className="dot"></div>
+                </div>
+              ) : (
+                messages.map((msg, index) => (
+                  <div key={index} className={`message ${msg.type}`}>
+                    <div className="message-content">
+                      {msg.content}
                     </div>
                   </div>
-                )}
-              </div>
-              
-              {/* Page Input for Image Queries */}
-              {showPageInput && (
-                <div className="page-input-container">
-                  <p>La tua domanda sembra riferirsi ad un'immagine. Specifica il numero di pagina:</p>
-                  <div className="page-input-row">
-                    <input
-                      type="number"
-                      min="1"
-                      value={pageNumber}
-                      onChange={(e) => setPageNumber(e.target.value)}
-                      placeholder="Numero pagina"
-                    />
-                    <button onClick={handlePageSubmit}>Invia</button>
+                ))
+              )}
+              {loading && (
+                <div className="message bot loading">
+                  <div className="loading-indicator">
+                    <div className="dot"></div>
+                    <div className="dot"></div>
+                    <div className="dot"></div>
                   </div>
                 </div>
               )}
-              
-              {/* Message Input */}
-              <div className="input-area">
-                <input
-                  type="text"
-                  value={currentMessage}
-                  onChange={(e) => setCurrentMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  placeholder="Scrivi la tua domanda..."
-                  disabled={loading || showPageInput}
-                />
-                <button 
-                  className="send-btn"
-                  onClick={sendMessage}
-                  disabled={!currentMessage.trim() || loading || showPageInput}
-                >
-                  Invia
-                </button>
-              </div>
             </div>
-          </>
+            
+            {/* Page Input for Image Queries */}
+            {showPageInput && (
+              <div className="page-input-container">
+                <p>La tua domanda sembra riferirsi ad un'immagine. Specifica il numero di pagina:</p>
+                <div className="page-input-row">
+                  <input
+                    type="number"
+                    min="1"
+                    value={pageNumber}
+                    onChange={(e) => setPageNumber(e.target.value)}
+                    placeholder="Numero pagina"
+                  />
+                  <button onClick={handlePageSubmit}>Invia</button>
+                </div>
+              </div>
+            )}
+            
+            {/* Message Input */}
+            <div className="input-area">
+              <input
+                type="text"
+                value={currentMessage}
+                onChange={(e) => setCurrentMessage(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                placeholder="Scrivi la tua domanda..."
+                disabled={loading || showPageInput}
+              />
+              <button 
+                className="send-btn"
+                onClick={sendMessage}
+                disabled={!currentMessage.trim() || loading || showPageInput}
+              >
+                Invia
+              </button>
+            </div>
+          </div>
         )}
       </main>
 
