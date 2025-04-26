@@ -35,7 +35,7 @@ class HyDERetriever:
         logger.info("Hypothetical document generated.")
         return response.text
 
-    def retrieve(self, query, max_tokens=8000, k=10):  # Modificato da 15 a 10
+    def retrieve(self, query, max_tokens=8000, k=20):  # Modificato da 15 a 10
         logger.info("Retrieving relevant documents using HyDE...")
         hypothetical_doc = self.generate_hypothetical_document(query)
         hypothetical_embedding = generate_embeddings([hypothetical_doc])[0]

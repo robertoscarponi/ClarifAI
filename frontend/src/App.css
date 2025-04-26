@@ -15,13 +15,56 @@
   --text-dark: #333333;
   --text-medium: #666666;
   --text-light: #999999;
+  
+  /* Colori di base del tema chiaro */
+  --background-color: #F9F9F7;
+  --surface-color: #FFFFFF;
+  --text-color: #333333;
+  --text-color-secondary: #666666;
+  --text-color-tertiary: #999999;
+  --border-color: #EEEEEE;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --message-user-bg: var(--primary-coral);
+  --message-user-color: white;
+  --message-bot-bg: #f1f1f1;
+  --message-bot-color: #333;
+  --input-bg: white;
+  --input-border: #DDDDDD;
+  --card-bg: white;
+  --header-bg: white;
+  --sidebar-bg: white;
+  --chat-header-bg: var(--primary-teal);
+  --chat-header-color: white;
+}
+
+/* Tema scuro */
+:root.dark-mode {
+  --background-color: #121212;
+  --surface-color: #1E1E1E;
+  --text-color: #E0E0E0;
+  --text-color-secondary: #B0B0B0;
+  --text-color-tertiary: #808080;
+  --border-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --message-user-bg: var(--primary-coral);
+  --message-user-color: white;
+  --message-bot-bg: #2A2A2A;
+  --message-bot-color: #E0E0E0;
+  --input-bg: #2A2A2A;
+  --input-border: #444444;
+  --card-bg: #1E1E1E;
+  --header-bg: #1A1A1A;
+  --sidebar-bg: #1A1A1A;
+  --chat-header-bg: var(--primary-dark-blue);
+  --chat-header-color: white;
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color: var(--background-cream);
-  color: var(--text-dark);
+  background-color: var(--background-color);
+  color: var(--text-color);
   line-height: 1.6;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .app {
@@ -76,14 +119,34 @@ body {
   left: 0;
   top: 0;
   height: 100%;
-  width: 300px;
-  background-color: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 250px; /* Ridotta da 300px a 250px */
+  background-color: var(--sidebar-bg);
+  box-shadow: 0 0 10px var(--shadow-color);
   transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  z-index: 1000;
+  transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1); /* Aumentato da 0.8s a 1.2s */
+  z-index: 1050; /* Aumentato lo z-index per assicurarsi che stia sopra al contenuto */
   display: flex;
   flex-direction: column;
+}
+
+/* Aggiungi un overlay con transizione fluida */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1040; /* Appena sotto la sidebar */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1), visibility 0s 2s;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 2s cubic-bezier(0.19, 1, 0.22, 1), visibility 0s;
 }
 
 .sidebar.open {
@@ -95,13 +158,13 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .sidebar-header h2 {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
 }
 
 .close-btn {
@@ -130,10 +193,11 @@ body {
   cursor: pointer;
   transition: background-color 0.2s;
   margin-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .book-item:hover {
-  background-color: #f0f0f0;
+  background-color: var(--border-color);
 }
 
 .book-item.selected {
@@ -169,8 +233,8 @@ body {
   display: flex;
   align-items: center;
   padding: 15px 20px;
-  background-color: var(--primary-teal);
-  color: white;
+  background-color: var(--chat-header-bg);
+  color: var(--chat-header-color);
 }
 
 .menu-btn {
@@ -216,20 +280,35 @@ body {
   border-radius: 18px;
   margin-bottom: 15px;
   line-height: 1.5;
+  /* Rimuovi il padding e altri stili che andrebbero applicati solo ai messaggi utente */
 }
 
 .message.user {
   align-self: flex-end;
-  background-color: var(--primary-coral);
-  color: white;
+  background-color: var(--message-user-bg);
+  color: var(--message-user-color);
   border-bottom-right-radius: 4px;
+  max-width: 80%; /* Mantiene la larghezza limitata per i messaggi utente */
+  padding: 12px 16px;
+  border-radius: 18px;
 }
 
+/* Trova la classe .message.bot e sostituiscila con questa */
 .message.bot {
   align-self: flex-start;
-  background-color: #f1f1f1;
-  color: #333;
-  border-bottom-left-radius: 4px;
+  background-color: transparent; /* Rimuove lo sfondo */
+  color: var(--text-color); /* Usa il colore principale del testo */
+  padding: 0; /* Rimuove il padding del box */
+  border-radius: 0; /* Rimuove i bordi arrotondati */
+  max-width: 100%; /* Assicura che il testo occupi tutta la larghezza disponibile */
+  margin-bottom: 24px; /* Aumenta la separazione tra messaggi */
+  box-shadow: none; /* Rimuove eventuali ombre */
+}
+
+/* Aggiorna anche il contenuto del messaggio per estendersi correttamente */
+.message.bot .message-content {
+  width: 100%;
+  line-height: 1.6;
 }
 
 .message.system, .message.error {
@@ -278,8 +357,8 @@ body {
 .input-area {
   display: flex;
   padding: 15px 20px;
-  background-color: white;
-  border-top: 1px solid #eee;
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border-color);
   border-bottom-left-radius: 1rem;
   border-bottom-right-radius: 1rem;
 }
@@ -287,14 +366,17 @@ body {
 .input-area input {
   flex: 1;
   padding: 12px 15px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--input-border);
   border-radius: 20px;
   font-size: 1rem;
   outline: none;
+  background-color: var(--input-bg);
+  color: var(--text-color);
 }
 
 .input-area input:focus {
-  border-color: #7b68ee;
+  border-color: var(--primary-coral); /* Cambiato da #7b68ee a var(--primary-coral) */
+  box-shadow: 0 0 0 2px rgba(225, 90, 70, 0.2); /* Aggiunto un sottile effetto glow */
 }
 
 .send-btn {
@@ -392,19 +474,33 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background-color: white;
+  padding: 1rem 2rem 1rem 5.5rem; /* Ridotto il padding a sinistra per adattarsi al pulsante più piccolo */
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+  transition: padding-left 2s cubic-bezier(0.19, 1, 0.22, 1), background-color 0.3s, border-color 0.3s;
+  position: relative; /* Aggiunge position relative per il posizionamento corretto */
+  z-index: 1000;
 }
 
+/* Quando la sidebar è aperta, sposta l'header verso destra */
+body:has(.sidebar.open) .header {
+  padding-left: 280px; /* Un po' più di spazio rispetto alla larghezza della sidebar (250px) */
+}
+
+/* Assicurati che il logo non venga nascosto anche durante la transizione */
 .logo {
   display: flex;
   align-items: center;
+  margin-left: 0.8rem; /* Ridotto leggermente */
+  z-index: 1000; /* Assicura che il logo stia sopra altri elementi */
+  position: relative;
+  transition: margin-left 2s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .logo h1 {
   margin-left: 0.5rem;
   font-size: 1.5rem;
-  color: #333;
+  color: var(--text-color);
 }
 
 .book-logo {
@@ -414,13 +510,16 @@ body {
 
 .navigation ul {
   display: flex;
+  align-items: center; /* Assicura che tutti gli elementi siano allineati verticalmente */
+  margin: 0;
+  padding: 0;
   list-style: none;
   gap: 2rem;
 }
 
 .navigation a {
   text-decoration: none;
-  color: #333;
+  color: var(--text-color);
   font-weight: 500;
 }
 
@@ -448,34 +547,39 @@ body {
   align-items: center;
   padding: 2rem;
   margin-top: 1rem;
-  transition: margin-left 0.3s ease;
+  transition: margin-left 2s cubic-bezier(0.19, 1, 0.22, 1); /* Rimuovi la transizione sul margin */
 }
 
 .hero-section {
   text-align: center;
   margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .hero-section h1 {
   font-size: 2.5rem;
-  color: #333;
+  color: var(--text-color);
   margin-bottom: 1rem;
 }
 
 .subtitle {
-  font-size: 1.1rem;
-  color: #666;
+  font-size: 1rem; /* Reso leggermente più piccolo */
+  color: var(--text-color-tertiary);
   max-width: 800px;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
 }
 
 .question-box {
   width: 100%;
   max-width: 800px;
-  background-color: white;
+  background-color: var(--card-bg);
   border-radius: 0.5rem;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px var(--shadow-color);
 }
 
 .question-box h2 {
@@ -499,19 +603,22 @@ body {
 .search-container input {
   flex: 1;
   padding: 0.75rem 1rem 0.75rem 3rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--input-border);
   border-radius: 2rem;
   font-size: 1rem;
   outline: none;
+  background-color: var(--input-bg);
+  color: var(--text-color);
 }
 
 .search-container input:focus {
-  border-color: var(--primary-teal);
+  border-color: var(--primary-coral); /* Cambiato da var(--primary-teal) a var(--primary-coral) */
+  box-shadow: 0 0 0 2px rgba(225, 90, 70, 0.2); /* Aggiunto un sottile effetto glow */
 }
 
 .search-btn {
   position: absolute;
-  right: 0.5rem;
+  right: 0.16rem;
   background-color: var(--primary-coral);
   color: white;
   border: none;
@@ -554,7 +661,6 @@ body {
 
 .bottom-section p {
   color: #666;
-  max-width: 600px;
 }
 
 /* Chat Section Styles (existing styles with adjustments) */
@@ -564,21 +670,21 @@ body {
   height: 80vh;
   display: flex;
   flex-direction: column;
-  background-color: white;
+  background-color: var(--card-bg);
   border-radius: 1rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  transition: margin-left 0.3s ease;
+  box-shadow: 0 2px 10px var(--shadow-color);
+  transition: none; /* Rimuovi la transizione sul margin */
 }
 
 .chat-section.sidebar-open {
-  margin-left: 300px;
+  margin-left: 0; /* Non spostare più il contenuto */
 }
 
 .chat-header {
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #eee;
-  background-color: var(--primary-teal);
-  color: white;
+  background-color: var(--chat-header-bg);
+  color: var(--chat-header-color);
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
 }
@@ -587,12 +693,13 @@ body {
   font-size: 1.2rem;
 }
 
+/* Modifica per allineare il pulsante sidebar con il logo */
 .sidebar-toggle {
   position: fixed;
-  top: 1rem;
-  left: 1rem;
-  background: var(--primary-coral);
-  color: white;
+  top: 0.87rem; /* Ridotto ulteriormente da 1.05rem per un allineamento perfetto */
+  left: 1.7rem;
+  background: transparent; /* Rimosso lo sfondo colorato */
+  color: var(--text-color); /* Usa il colore del testo principale che si adatta al tema */
   border: none;
   border-radius: 50%;
   width: 3rem;
@@ -600,9 +707,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   cursor: pointer;
-  z-index: 1001;
+  z-index: 999;
 }
 
 /* Responsive styles */
@@ -633,6 +740,19 @@ body {
   
   .chat-section.sidebar-open {
     margin-left: 0;
+  }
+  
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .subtitle-heading {
+    font-size: 1.5rem;
+  }
+  
+  .hero-logo-svg {
+    width: 60px;
+    height: 60px;
   }
 }
 
@@ -723,7 +843,7 @@ body {
 
 /* Regola la transizione del contenuto principale */
 .main-container {
-  transition: margin-left 0.3s ease;
+  transition: margin-left 2s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 /* Responsive design per quando la sidebar è aperta */
@@ -731,4 +851,164 @@ body {
   .main-container.sidebar-open {
     margin-left: 0;
   }
+}
+
+/* Aggiungere stili per il pulsante toggle tema */
+.theme-toggle-btn {
+  background: transparent; /* Rimosso lo sfondo colorato */
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--text-color); /* Usa il colore del testo principale che si adatta al tema */
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 2.2rem; /* Dimensione fissa per meglio allinearsi con gli altri elementi */
+  height: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+  outline: none;
+  margin-top: -2px; /* Piccola regolazione per allineamento verticale */
+}
+
+/* Aggiorna il colore dell'icona del tema per entrambe le modalità */
+.theme-icon {
+  color: var(--text-color); /* Usa il colore del testo principale invece del bianco fisso */
+  font-size: 1rem;
+}
+
+:root.dark-mode .theme-icon {
+  color: var(--text-color); /* Usa il colore del testo principale in modalità scura */
+}
+
+/* Aggiorna anche lo stile hover per entrambi i pulsanti */
+.sidebar-toggle:hover, .theme-toggle-btn:hover {
+  background-color: var(--border-color); /* Leggero sfondo al passaggio del mouse */
+}
+
+/* Rendi l'icona più visibile */
+.theme-icon {
+  color: white;
+  font-size: 1rem; /* Leggermente più piccola per un look più elegante */
+}
+
+:root.dark-mode .theme-icon {
+  color: white; /* Cambiato da var(--primary-orange) a white */
+}
+
+/* Aggiornamenti per il tema scuro */
+:root.dark-mode .welcome-message h2 {
+  color: var(--primary-coral);
+}
+
+:root.dark-mode .welcome-message p {
+  color: var(--text-color-secondary);
+}
+
+:root.dark-mode .book-item.selected {
+  background-color: rgba(72, 161, 176, 0.2);
+}
+
+:root.dark-mode .sidebar-toggle {
+  background: transparent; /* Rimosso lo sfondo colorato anche in modalità scura */
+}
+
+:root.dark-mode .bottom-section h2 {
+  color: var(--text-color);
+}
+
+:root.dark-mode .bottom-section p {
+  color: var(--text-color-secondary);
+}
+
+:root.dark-mode .error-notification {
+  background-color: rgba(255, 77, 79, 0.2);
+}
+
+/* Assicurarsi che le transizioni siano fluide */
+.clarif-ai * {
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Mantieni gli stili principali invariati */
+
+/* Modifica lo stile del titolo per renderlo più grande e d'impatto */
+.app-title {
+  margin-left: 0.05rem;
+  font-size: 2rem; /* Aumenta la dimensione del font */
+  font-weight: 700; /* Rende il font più bold */
+  color: var(--text-color);
+  font-family: 'Montserrat', sans-serif; /* Font più moderno e d'impatto */
+  letter-spacing: -0.5px; /* Riduce lo spazio tra le lettere */
+}
+
+/* Stili per la parte "AI" in arancione */
+.highlight-ai {
+  color: var(--primary-coral); /* Cambiato da primary-orange a primary-coral */
+  font-weight: 800; /* Un po' più bold del resto */
+}
+
+/* Assicurati che in modalità scura i colori restino corretti */
+:root.dark-mode .app-title {
+  color: var(--text-color);
+}
+
+:root.dark-mode .highlight-ai {
+  color: var(--primary-coral); /* Mantieni arancione anche in dark mode */
+}
+
+/* Aggiungi questi stili per il logo e titolo centrale */
+
+.center-logo {
+  display: flex;
+  flex-direction: row; /* Cambiato da column a row per allinearli orizzontalmente */
+  align-items: center; /* Allineamento verticale al centro */
+  justify-content: center; /* Centrati orizzontalmente */
+  margin-bottom: 0.5rem; /* Ridotto lo spazio sotto */
+  gap: 0.05rem; /* Ridotto lo spazio tra logo e titolo */
+}
+
+.hero-logo-svg {
+  width: 70px; /* Leggermente aumentato per bilanciare con il titolo */
+  height: 70px;
+  margin-top: 0; /* Rimosso l'offset esistente */
+}
+
+.hero-title {
+  font-size: 3.2rem; /* Leggermente aumentato */
+  font-weight: 700;
+  margin: 0;
+  padding-bottom: 0.15rem; /* Compensa la differenza di altezza ottica */
+  margin-top: 0.86rem; /* Aggiunto per spostare il titolo leggermente in basso */
+  color: var(--text-color);
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: -0.5px;
+  line-height: 1; /* Impedisce che occupi più spazio verticale del necessario */
+}
+
+/* Stile per il sottotitolo (precedentemente era il titolo h1) */
+.subtitle-heading {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0.3rem 0 1rem; /* Ridotto il margine superiore */
+  color: var(--text-color-secondary);
+}
+
+/* Aggiorna lo stile della sezione hero */
+.hero-section {
+  text-align: center;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Assicura che gli stili dark mode funzionino anche per i nuovi elementi */
+:root.dark-mode .hero-title {
+  color: var(--text-color);
+}
+
+:root.dark-mode .subtitle-heading {
+  color: var(--text-color-secondary);
 }
