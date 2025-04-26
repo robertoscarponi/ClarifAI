@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import axios from 'axios';
 import { FaArrowRight, FaRedo, FaMoon, FaSun } from 'react-icons/fa';
@@ -21,6 +21,8 @@ function App() {
   const [pageNumber, setPageNumber] = useState('');
   const [showChat, setShowChat] = useState(false);
   const [initialized, setInitialized] = useState(false);
+
+  const sidebarRef = useRef(null);
 
   // Carica il libro e lo imposta all'avvio
   useEffect(() => {
@@ -47,6 +49,28 @@ function App() {
     // Salva la preferenza
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
+
+  // Aggiungi questo useEffect per gestire i clic all'esterno della sidebar
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (isSidebarOpen && sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        // Verifica che non sia un clic sul pulsante della sidebar
+        const isSidebarToggle = event.target.closest('.sidebar-toggle');
+        
+        if (!isSidebarToggle) {
+          setIsSidebarOpen(false);
+        }
+      }
+    }
+    
+    // Aggiungi l'event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    // Cleanup
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isSidebarOpen]);
 
   // Sostituisci la funzione toggleTheme con questa versione
   const toggleTheme = (event) => {
@@ -225,6 +249,7 @@ function App() {
 
   return (
     <div className={`clarif-ai ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
+      <div className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
       {/* Header */}
       <header className="header">
         <div className="logo">
@@ -233,11 +258,13 @@ function App() {
         </div>
         <nav className="navigation">
           <ul>
-            <li><a href="#" className="active">Home</a></li>
+            <li><a href="#" className="active" onClick={(e) => {
+              e.preventDefault();
+              setShowChat(false);
+            }}>Home</a></li>
             <li><a href="#">My Sessions</a></li>
             <li><a href="#">About</a></li>
             <li><a href="#" className="get-started-btn">Get Started</a></li>
-            {/* Aggiungi pulsante theme toggle */}
             <li>
               <button onClick={toggleTheme} className="theme-toggle-btn">
                 {isDarkMode ? <FaSun className="theme-icon" /> : <FaMoon className="theme-icon" />}
@@ -253,7 +280,7 @@ function App() {
       </button>
       
       {/* Sidebar - Spostato fuori dalla condizione showChat */}
-      <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+      <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`} ref={sidebarRef}>
         <div className="sidebar-header">
           <h2>Materiale di Studio</h2>
           <button className="close-btn" onClick={toggleSidebar}>×</button>

@@ -119,14 +119,34 @@ body {
   left: 0;
   top: 0;
   height: 100%;
-  width: 300px;
+  width: 250px; /* Ridotta da 300px a 250px */
   background-color: var(--sidebar-bg);
   box-shadow: 0 0 10px var(--shadow-color);
   transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  z-index: 1000;
+  transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1); /* Aumentato da 0.8s a 1.2s */
+  z-index: 1050; /* Aumentato lo z-index per assicurarsi che stia sopra al contenuto */
   display: flex;
   flex-direction: column;
+}
+
+/* Aggiungi un overlay con transizione fluida */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1040; /* Appena sotto la sidebar */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1), visibility 0s 2s;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 2s cubic-bezier(0.19, 1, 0.22, 1), visibility 0s;
 }
 
 .sidebar.open {
@@ -457,15 +477,24 @@ body {
   padding: 1rem 2rem 1rem 5.5rem; /* Ridotto il padding a sinistra per adattarsi al pulsante più piccolo */
   background-color: var(--header-bg);
   border-bottom: 1px solid var(--border-color);
-  transition: background-color 0.3s, border-color 0.3s;
+  transition: padding-left 2s cubic-bezier(0.19, 1, 0.22, 1), background-color 0.3s, border-color 0.3s;
   position: relative; /* Aggiunge position relative per il posizionamento corretto */
+  z-index: 1000;
 }
 
+/* Quando la sidebar è aperta, sposta l'header verso destra */
+body:has(.sidebar.open) .header {
+  padding-left: 280px; /* Un po' più di spazio rispetto alla larghezza della sidebar (250px) */
+}
+
+/* Assicurati che il logo non venga nascosto anche durante la transizione */
 .logo {
   display: flex;
   align-items: center;
   margin-left: 0.8rem; /* Ridotto leggermente */
   z-index: 1000; /* Assicura che il logo stia sopra altri elementi */
+  position: relative;
+  transition: margin-left 2s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .logo h1 {
@@ -518,7 +547,7 @@ body {
   align-items: center;
   padding: 2rem;
   margin-top: 1rem;
-  transition: margin-left 0.3s ease;
+  transition: margin-left 2s cubic-bezier(0.19, 1, 0.22, 1); /* Rimuovi la transizione sul margin */
 }
 
 .hero-section {
@@ -644,11 +673,11 @@ body {
   background-color: var(--card-bg);
   border-radius: 1rem;
   box-shadow: 0 2px 10px var(--shadow-color);
-  transition: margin-left 0.3s ease;
+  transition: none; /* Rimuovi la transizione sul margin */
 }
 
 .chat-section.sidebar-open {
-  margin-left: 300px;
+  margin-left: 0; /* Non spostare più il contenuto */
 }
 
 .chat-header {
@@ -667,14 +696,14 @@ body {
 /* Modifica per allineare il pulsante sidebar con il logo */
 .sidebar-toggle {
   position: fixed;
-  top: 0.95rem; /* Ridotto ulteriormente da 1.05rem per un allineamento perfetto */
+  top: 0.87rem; /* Ridotto ulteriormente da 1.05rem per un allineamento perfetto */
   left: 1.7rem;
-  background: var(--primary-coral);
-  color: white;
+  background: transparent; /* Rimosso lo sfondo colorato */
+  color: var(--text-color); /* Usa il colore del testo principale che si adatta al tema */
   border: none;
   border-radius: 50%;
-  width: 2.7rem;
-  height: 2.7rem;
+  width: 3rem;
+  height: 3rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -814,7 +843,7 @@ body {
 
 /* Regola la transizione del contenuto principale */
 .main-container {
-  transition: margin-left 0.3s ease;
+  transition: margin-left 2s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 /* Responsive design per quando la sidebar è aperta */
@@ -826,11 +855,11 @@ body {
 
 /* Aggiungere stili per il pulsante toggle tema */
 .theme-toggle-btn {
-  background: var(--primary-coral); /* Aggiunto sfondo dello stesso colore della sidebar */
+  background: transparent; /* Rimosso lo sfondo colorato */
   border: none;
   cursor: pointer;
   font-size: 1.2rem;
-  color: white; /* Testo bianco per contrasto */
+  color: var(--text-color); /* Usa il colore del testo principale che si adatta al tema */
   padding: 0.5rem;
   border-radius: 50%;
   width: 2.2rem; /* Dimensione fissa per meglio allinearsi con gli altri elementi */
@@ -838,17 +867,24 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s;
+  transition: transform 0.3s;
   outline: none;
   margin-top: -2px; /* Piccola regolazione per allineamento verticale */
 }
 
-.theme-toggle-btn:hover {
-  background-color: var(--primary-orange);
+/* Aggiorna il colore dell'icona del tema per entrambe le modalità */
+.theme-icon {
+  color: var(--text-color); /* Usa il colore del testo principale invece del bianco fisso */
+  font-size: 1rem;
 }
 
-.theme-toggle-btn:active {
-  transform: scale(0.95); /* Piccola animazione quando il pulsante è cliccato */
+:root.dark-mode .theme-icon {
+  color: var(--text-color); /* Usa il colore del testo principale in modalità scura */
+}
+
+/* Aggiorna anche lo stile hover per entrambi i pulsanti */
+.sidebar-toggle:hover, .theme-toggle-btn:hover {
+  background-color: var(--border-color); /* Leggero sfondo al passaggio del mouse */
 }
 
 /* Rendi l'icona più visibile */
@@ -875,7 +911,7 @@ body {
 }
 
 :root.dark-mode .sidebar-toggle {
-  background: var(--primary-coral);
+  background: transparent; /* Rimosso lo sfondo colorato anche in modalità scura */
 }
 
 :root.dark-mode .bottom-section h2 {
@@ -899,7 +935,7 @@ body {
 
 /* Modifica lo stile del titolo per renderlo più grande e d'impatto */
 .app-title {
-  margin-left: 0.75rem;
+  margin-left: 0.05rem;
   font-size: 2rem; /* Aumenta la dimensione del font */
   font-weight: 700; /* Rende il font più bold */
   color: var(--text-color);
@@ -930,7 +966,7 @@ body {
   align-items: center; /* Allineamento verticale al centro */
   justify-content: center; /* Centrati orizzontalmente */
   margin-bottom: 0.5rem; /* Ridotto lo spazio sotto */
-  gap: 0.7rem; /* Ridotto lo spazio tra logo e titolo */
+  gap: 0.05rem; /* Ridotto lo spazio tra logo e titolo */
 }
 
 .hero-logo-svg {
