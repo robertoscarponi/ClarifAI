@@ -163,10 +163,12 @@ def process_query():
             "Segui queste linee guida:\n"
             "1. Usa esclusivamente le informazioni presenti nei documenti forniti, senza aggiungere dettagli esterni o fare ipotesi non supportate.\n"
             "2. Non escludere mai informazioni importanti che contribuiscono alla comprensione del tema richiesto nella domanda.\n"
-            "3. Usa il linguaggio tecnico appropriato presente nei documenti, mantenendo la precisione terminologica.\n"
-            "4. Struttura la risposta in modo fluido e conversazionale, come una spiegazione naturale.\n"
-            "5. Se i documenti non contengono informazioni sufficienti, rispondi onestamente che non hai abbastanza informazioni, ma in modo naturale.\n"
-            "6. Mantieni un tono professionale ma accessibile, evitando formulazioni accademiche rigide.\n"
+            "3. Rispondi sempre in modo dettagliato senza mai limitare la lunghezza della tua risposta.\n"
+            "4. Usa il linguaggio tecnico appropriato presente nei documenti, mantenendo la precisione terminologica.\n"
+            "5. Struttura la risposta in modo fluido e conversazionale, come una spiegazione naturale.\n"
+            "6. Se i documenti non contengono informazioni sufficienti, rispondi onestamente che non hai abbastanza informazioni, ma in modo naturale.\n"
+            "7. Mantieni un tono professionale ma accessibile, evitando formulazioni accademiche rigide.\n"
+
             "Ecco i documenti di riferimento: "
         )
         prompt = base_context + " ".join(similar_docs)

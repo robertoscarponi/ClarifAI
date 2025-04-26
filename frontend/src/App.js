@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios';
-import { FaArrowRight, FaRedo } from 'react-icons/fa';
+import { FaArrowRight, FaRedo, FaMoon, FaSun } from 'react-icons/fa';
 import ClarifAILogo from './LogoAI';
 
 const API_BASE_URL = 'http://127.0.0.1:5001'; // Usa la nuova porta
 
 function App() {
+  // Aggiungi stato per il tema
+  const [isDarkMode, setIsDarkMode] = useState(false);
   // Stato esistente
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [books, setBooks] = useState([]);
@@ -24,6 +26,54 @@ function App() {
   useEffect(() => {
     fetchAndSelectDefaultBook();
   }, []);
+
+  // Modifica l'useEffect che gestisce il tema
+  useEffect(() => {
+    // Controlla se c'è una preferenza salvata
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      setIsDarkMode(true);
+    }
+    
+    // Applica la classe all'elemento root invece che al body
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark-mode');
+      document.documentElement.classList.remove('light-mode');
+    } else {
+      document.documentElement.classList.remove('dark-mode');
+      document.documentElement.classList.add('light-mode');
+    }
+    
+    // Salva la preferenza
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+
+  // Sostituisci la funzione toggleTheme con questa versione
+  const toggleTheme = (event) => {
+    // Previeni la propagazione dell'evento in caso di problemi
+    if (event) event.stopPropagation();
+    
+    console.log("Toggling theme from:", isDarkMode, "to:", !isDarkMode);
+    
+    // Usa il form funzionale del setter per garantire che usi sempre il valore più aggiornato
+    setIsDarkMode(prevMode => {
+      const newMode = !prevMode;
+      
+      // Applica immediatamente la classe per evitare ritardi di rendering
+      if (newMode) {
+        document.documentElement.classList.add('dark-mode');
+        document.documentElement.classList.remove('light-mode');
+      } else {
+        document.documentElement.classList.remove('dark-mode');
+        document.documentElement.classList.add('light-mode');
+      }
+      
+      // Salva la preferenza subito
+      localStorage.setItem('theme', newMode ? 'dark' : 'light');
+      
+      return newMode;
+    });
+  };
 
   const fetchAndSelectDefaultBook = async () => {
     try {
@@ -174,12 +224,12 @@ function App() {
   };
 
   return (
-    <div className="clarif-ai">
+    <div className={`clarif-ai ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
       {/* Header */}
       <header className="header">
         <div className="logo">
           <ClarifAILogo className="logo-svg" />
-          <h1>ClarifAI</h1>
+          <h1 className="app-title">Clarif<span className="highlight-ai">AI</span></h1>
         </div>
         <nav className="navigation">
           <ul>
@@ -187,6 +237,12 @@ function App() {
             <li><a href="#">My Sessions</a></li>
             <li><a href="#">About</a></li>
             <li><a href="#" className="get-started-btn">Get Started</a></li>
+            {/* Aggiungi pulsante theme toggle */}
+            <li>
+              <button onClick={toggleTheme} className="theme-toggle-btn">
+                {isDarkMode ? <FaSun className="theme-icon" /> : <FaMoon className="theme-icon" />}
+              </button>
+            </li>
           </ul>
         </nav>
       </header>
@@ -234,7 +290,11 @@ function App() {
         {!showChat ? (
           <>
             <section className="hero-section">
-              <h1>Your AI Study Assistant</h1>
+              <div className="center-logo">
+                <ClarifAILogo className="hero-logo-svg" />
+                <h1 className="hero-title">Clarif<span className="highlight-ai">AI</span></h1>
+              </div>
+              <h2 className="subtitle-heading">Your AI Study Assistant</h2>
               <p className="subtitle">
                 Ask any exam question and get instant, accurate answers to help you prepare for your exams.
                 <br />ClarifAI uses AI to provide comprehensive explanations tailored to your studies.
@@ -250,7 +310,7 @@ function App() {
             </section>
             
             <section className="question-box">
-              <h2>Ask Your Question</h2>
+              <h2>How can I help you?</h2>
               <div className="search-container">
                 <div className="search-icon">
                   <ClarifAILogo className="search-logo-icon" />
@@ -271,21 +331,13 @@ function App() {
                 </button>
               </div>
             </section>
-
-            <section className="bottom-section">
-              <div className="book-icon-container">
-                <ClarifAILogo className="big-logo-icon" />
-              </div>
-              <h2>Ask Your Exam Questions</h2>
-              <p>
-                Enter any exam-related question above and get an instant, AI-powered answer to help with your studies.
-              </p>
-            </section>
           </>
         ) : (
           <div className={`chat-section ${isSidebarOpen ? 'sidebar-open' : ''}`}>
             <header className="chat-header">
-              <h1>{selectedBook ? selectedBook.name : 'AI Study Assistant'}</h1>
+              <h1>
+                {selectedBook ? `Clarifying on: ${selectedBook.name}` : 'AI Study Assistant'}
+              </h1>
             </header>
             
             <div className="messages-area">
