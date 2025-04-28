@@ -945,8 +945,52 @@ body:has(.sidebar.open) .header {
 
 /* Stili per la parte "AI" in arancione */
 .highlight-ai {
-  color: var(--primary-coral); /* Cambiato da primary-orange a primary-coral */
-  font-weight: 800; /* Un po' più bold del resto */
+  background: linear-gradient(45deg, var(--primary-orange), var(--primary-coral), var(--primary-orange), var(--primary-coral));
+  background-size: 300% 300%;
+  animation: 
+    gradientFlow 4s ease infinite,
+    glowPulse 2.5s ease-in-out infinite;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+}
+
+:root.dark-mode .highlight-ai {
+  /* Stesse proprietà della versione light */
+  background: linear-gradient(45deg, var(--primary-orange), var(--primary-coral), var(--primary-orange), var(--primary-coral));
+  background-size: 300% 300%;
+  animation: 
+    gradientFlow 4s ease infinite,
+    glowPulse 2.5s ease-in-out infinite;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Aggiorna lo stile della parte "AI" per avere un effetto sfumato */
+.highlight-ai {
+  background: linear-gradient(45deg, var(--primary-orange), var(--primary-coral), var(--primary-orange), var(--primary-coral));
+  background-size: 300% 300%;
+  animation: gradientFlow 4s ease infinite;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800; /* Mantenuto il bold esistente */
+}
+
+/* Assicurati che funzioni anche in dark mode */
+:root.dark-mode .highlight-ai {
+  background: linear-gradient(45deg, var(--primary-orange), var(--primary-coral), var(--primary-orange), var(--primary-coral));
+  background-size: 300% 300%;
+  animation: gradientFlow 4s ease infinite;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Assicurati che in modalità scura i colori restino corretti */
@@ -956,6 +1000,26 @@ body:has(.sidebar.open) .header {
 
 :root.dark-mode .highlight-ai {
   color: var(--primary-coral); /* Mantieni arancione anche in dark mode */
+}
+
+/* Aggiungi questa animazione keyframe */
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Aggiungi questa animazione keyframe */
+@keyframes glowPulse {
+  0% { text-shadow: 0 0 5px rgba(225, 90, 70, 0.1); }
+  50% { text-shadow: 0 0 12px rgba(242, 153, 74, 0.4), 0 0 20px rgba(242, 153, 74, 0.2); }
+  100% { text-shadow: 0 0 5px rgba(225, 90, 70, 0.1); }
 }
 
 /* Aggiungi questi stili per il logo e titolo centrale */
@@ -1011,4 +1075,16 @@ body:has(.sidebar.open) .header {
 
 :root.dark-mode .subtitle-heading {
   color: var(--text-color-secondary);
+}
+
+/* Aggiungi questo a App.css */
+.sidebar-section-title {
+  font-size: 0.9rem;
+  color: var(--text-color-tertiary);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
 }
