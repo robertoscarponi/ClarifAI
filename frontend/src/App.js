@@ -282,7 +282,7 @@ function App() {
       {/* Sidebar - Spostato fuori dalla condizione showChat */}
       <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`} ref={sidebarRef}>
         <div className="sidebar-header">
-          <h2>Materiale di Studio</h2>
+          <h2>Academic Resources</h2>
           <button className="close-btn" onClick={toggleSidebar}>×</button>
         </div>
         <div className="sidebar-content">
@@ -294,13 +294,39 @@ function App() {
                   className="book-item selected"
                 >
                   <div className="book-icon">📚</div>
-                  <span>{book.name}</span>
+                  <span>{book.name === "Reti e telecomunicazioni Pattavina" ? "Reti di telecomunicazioni" : book.name}</span>
                 </li>
               ))
             ) : (
               <li className="no-books">Nessun libro caricato</li>
             )}
           </ul>
+          
+          {/* Aggiungi questa sezione per i libri fittizi */}
+          <h3 className="sidebar-section-title">Available Materials</h3>
+          <ul className="book-list">
+            <li className="book-item">
+              <div className="book-icon">📘</div>
+              <span>Analisi Matematica I</span>
+            </li>
+            <li className="book-item">
+              <div className="book-icon">📙</div>
+              <span>Reti di telecomunicazioni</span> {/* Titolo modificato qui */}
+            </li>
+            <li className="book-item">
+              <div className="book-icon">📗</div>
+              <span>Fisica</span>
+            </li>
+            <li className="book-item">
+              <div className="book-icon">📕</div>
+              <span>Economia e Organizzazione Aziendale</span>
+            </li>
+            <li className="book-item">
+              <div className="book-icon">📓</div>
+              <span>Computer Networks</span>
+            </li>
+          </ul>
+          
           {error && (
             <div className="sidebar-error">
               <p>{error}</p>
