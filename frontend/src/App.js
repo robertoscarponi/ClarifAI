@@ -3,6 +3,7 @@ import './App.css';
 import axios from 'axios';
 import { FaArrowRight, FaRedo, FaMoon, FaSun } from 'react-icons/fa';
 import ClarifAILogo from './LogoAI';
+import ReactMarkdown from 'react-markdown';
 
 const API_BASE_URL = 'http://127.0.0.1:5001'; // Usa la nuova porta
 
@@ -411,7 +412,11 @@ function App() {
                 messages.map((msg, index) => (
                   <div key={index} className={`message ${msg.type}`}>
                     <div className="message-content">
-                      {msg.content}
+                      {msg.type === 'bot' ? (
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      ) : (
+                        msg.content
+                      )}
                     </div>
                   </div>
                 ))

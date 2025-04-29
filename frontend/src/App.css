@@ -1088,3 +1088,61 @@ body:has(.sidebar.open) .header {
   letter-spacing: 0.5px;
   font-weight: 600;
 }
+
+/* Stili per il markdown renderizzato */
+.message-content h1, 
+.message-content h2, 
+.message-content h3 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.message-content h1 {
+  font-size: 1.5rem;
+}
+
+.message-content h2 {
+  font-size: 1.3rem;
+}
+
+.message-content h3 {
+  font-size: 1.1rem;
+}
+
+.message-content p {
+  margin-bottom: 12px;
+}
+
+.message-content ul, 
+.message-content ol {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.message-content li {
+  margin: 4px 0;
+}
+
+.message-content code {
+  background-color: var(--border-color);
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.message-content pre {
+  background-color: var(--border-color);
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.message-content blockquote {
+  border-left: 3px solid var(--primary-teal);
+  padding-left: 12px;
+  margin: 12px 0;
+  color: var(--text-color-secondary);
+}

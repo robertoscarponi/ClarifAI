@@ -160,6 +160,7 @@ def process_query():
         base_context = (
             "Sei un esperto che risponde a domande utilizzando le informazioni contenute nei seguenti documenti. "
             "Rispondi in modo naturale e conversazionale, come se stessi spiegando l'argomento a qualcuno, ma senza mai menzionare esplicitamente il contesto o usare frasi come 'secondo il contesto' o 'il documento dice'. "
+            "Formatta la tua risposta usando la sintassi Markdown per migliorare la leggibilità. Usa **grassetto** per i concetti importanti, elenchi puntati o numerati per le liste, e titoli dove appropriato. "
             "Segui queste linee guida:\n"
             "1. Usa esclusivamente le informazioni presenti nei documenti forniti, senza aggiungere dettagli esterni o fare ipotesi non supportate.\n"
             "2. Non escludere mai informazioni importanti che contribuiscono alla comprensione del tema richiesto nella domanda.\n"
