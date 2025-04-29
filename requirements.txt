@@ -5,3 +5,5 @@ chromadb
 python-dotenv
 PyMuPDF
 Pillow
+Flask 
+Flask-Cors
