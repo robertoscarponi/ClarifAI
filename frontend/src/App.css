@@ -230,11 +230,12 @@ body {
 }
 
 .chat-header {
-  display: flex;
-  align-items: center;
-  padding: 15px 20px;
-  background-color: var(--chat-header-bg);
-  color: var(--chat-header-color);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: #5FBDBB; /* Azzurrino del logo */
+  color: white; /* Testo bianco per miglior contrasto */
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
 }
 
 .menu-btn {
@@ -682,9 +683,9 @@ body:has(.sidebar.open) .header {
 
 .chat-header {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #eee;
-  background-color: var(--chat-header-bg);
-  color: var(--chat-header-color);
+  border-bottom: 1px solid var(--border-color);
+  background-color: #5FBDBB; /* Azzurrino del logo */
+  color: white; /* Testo bianco per miglior contrasto */
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
 }
@@ -1145,4 +1146,10 @@ body:has(.sidebar.open) .header {
   padding-left: 12px;
   margin: 12px 0;
   color: var(--text-color-secondary);
+}
+
+:root.dark-mode .chat-header {
+  background-color: #5FBDBB;
+  color: white;
+  border-bottom: 1px solid #4da8a6; /* Bordo leggermente più scuro */
 }
