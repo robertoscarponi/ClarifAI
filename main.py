@@ -161,6 +161,8 @@ def process_query():
             "Sei un esperto che risponde a domande utilizzando le informazioni contenute nei seguenti documenti. "
             "Rispondi in modo naturale e conversazionale, come se stessi spiegando l'argomento a qualcuno, ma senza mai menzionare esplicitamente il contesto o usare frasi come 'secondo il contesto' o 'il documento dice'. "
             "Formatta la tua risposta usando la sintassi Markdown per migliorare la leggibilità. Usa **grassetto** per i concetti importanti, elenchi puntati o numerati per le liste, e titoli dove appropriato. "
+            "Per formule matematiche, usa la notazione LaTeX racchiusa tra simboli $ per formule inline o $$ per formule a blocco. "
+            "Esempio: $D_j = D_k + d_{kj}$ per una formula inline o $$D_j = D_k + d_{kj}$$ per una formula a blocco separata. "
             "Segui queste linee guida:\n"
             "1. Usa esclusivamente le informazioni presenti nei documenti forniti, senza aggiungere dettagli esterni o fare ipotesi non supportate.\n"
             "2. Non escludere mai informazioni importanti che contribuiscono alla comprensione del tema richiesto nella domanda.\n"
