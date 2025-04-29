@@ -4,6 +4,10 @@ import axios from 'axios';
 import { FaArrowRight, FaRedo, FaMoon, FaSun } from 'react-icons/fa';
 import ClarifAILogo from './LogoAI';
 import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import remarkGfm from 'remark-gfm';
+import 'katex/dist/katex.min.css'; // Importa gli stili CSS di KaTeX
 
 const API_BASE_URL = 'http://127.0.0.1:5001'; // Usa la nuova porta
 
@@ -413,7 +417,12 @@ function App() {
                   <div key={index} className={`message ${msg.type}`}>
                     <div className="message-content">
                       {msg.type === 'bot' ? (
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        <ReactMarkdown 
+                          remarkPlugins={[remarkMath, remarkGfm]}
+                          rehypePlugins={[rehypeKatex]}
+                        >
+                          {msg.content}
+                        </ReactMarkdown>
                       ) : (
                         msg.content
                       )}
