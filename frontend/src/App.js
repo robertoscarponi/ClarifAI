@@ -26,6 +26,7 @@ function App() {
   const [pageNumber, setPageNumber] = useState('');
   const [showChat, setShowChat] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [isImageMode, setIsImageMode] = useState(false); // Aggiungi un nuovo stato per la modalità immagine
 
   const sidebarRef = useRef(null);
 
@@ -152,103 +153,183 @@ function App() {
     return /immag|figur|schem|diagram|grafic|foto/i.test(query);
   };
 
-  const sendMessage = async () => {
-    // Funzione esistente... non modificata
-    if (!currentMessage.trim()) return;
+  // Aggiungi questa nuova funzione per estrarre il numero di pagina da una query
+  const extractPageNumber = (query) => {
+    // Pattern specifici con priorità più alta
+    const specificPatterns = [
+      /pagina\s+(\d+)/i,
+      /pag\.\s*(\d+)/i,
+      /pag\s+(\d+)/i,
+      /p\.\s*(\d+)/i,
+      /pagina numero\s+(\d+)/i,
+      /numero\s+(\d+)/i,
+      /figura\s+(\d+)/i,
+      /fig\.\s*(\d+)/i,
+      /immagine\s+(\d+)/i,
+    ];
     
-    const userMessage = currentMessage;
-    setCurrentMessage('');
-    
-    // Mostra la chat quando l'utente invia un messaggio
-    setShowChat(true);
-    
-    // Aggiungi il messaggio dell'utente alla chat
-    setMessages(prev => [...prev, { type: 'user', content: userMessage }]);
-    
-    // Se il sistema non è inizializzato, prova a inizializzarlo
-    if (!initialized) {
-      setMessages(prev => [...prev, { 
-        type: 'system', 
-        content: 'Inizializzazione del sistema in corso...' 
-      }]);
-      
-      try {
-        await fetchAndSelectDefaultBook();
-        if (!initialized) {
-          setMessages(prev => [...prev, { 
-            type: 'error', 
-            content: 'Impossibile inizializzare il sistema. Riprova più tardi.' 
-          }]);
-          return;
-        }
-      } catch (err) {
-        setMessages(prev => [...prev, { 
-          type: 'error', 
-          content: 'Errore di connessione al server. Riprova più tardi.' 
-        }]);
-        return;
+    // Prova prima con i pattern specifici
+    for (const pattern of specificPatterns) {
+      const match = query.match(pattern);
+      if (match && match[1]) {
+        return match[1];
       }
     }
     
-    // Verifica se è una query relativa a un'immagine
-    if (isImageQuery(userMessage) && !pageNumber) {
-      setShowPageInput(true);
-      return;
+    // Fallback: cerca qualsiasi numero nella stringa
+    // Cattura numero all'inizio, al centro o alla fine della stringa
+    const genericNumberPattern = /\b(\d+)\b/g;
+    const matches = [...query.matchAll(genericNumberPattern)];
+    
+    if (matches.length > 0) {
+      // Se ci sono più numeri, seleziona quello che sembra più probabile essere un numero di pagina
+      if (matches.length === 1) {
+        return matches[0][1]; // Se c'è un solo numero, restituiscilo
+      } else {
+        // Se ci sono più numeri, cerca di capire qual è il numero di pagina
+        // Strategia: controlla se qualcuno dei numeri è preceduto da parole che potrebbero indicare una pagina
+        const pageIndicators = ["pag", "pagina", "pg", "p", "page", "fig", "figura", "immagine", "numero", "num"];
+        
+        for (const indicator of pageIndicators) {
+          const indicatorIndex = query.toLowerCase().indexOf(indicator);
+          if (indicatorIndex >= 0) {
+            // Trova il numero più vicino all'indicatore
+            let closestMatch = null;
+            let minDistance = Infinity;
+            
+            for (const match of matches) {
+              const matchIndex = match.index;
+              const distance = Math.abs(matchIndex - indicatorIndex);
+              
+              if (distance < minDistance) {
+                minDistance = distance;
+                closestMatch = match;
+              }
+            }
+            
+            if (closestMatch) return closestMatch[1];
+          }
+        }
+        
+        // Se non troviamo un numero vicino a un indicatore, prendiamo il primo numero
+        return matches[0][1];
+      }
     }
     
-    await sendQueryToBackend(userMessage, pageNumber);
-    
-    // Reset del numero di pagina
-    if (pageNumber) {
-      setPageNumber('');
-      setShowPageInput(false);
-    }
+    return null;
   };
 
-  const handlePageSubmit = async () => {
-    // Funzione esistente... non modificata
-    if (!pageNumber.trim()) return;
+  // Modifica la funzione sendMessage per utilizzare extractPageNumber anche quando è richiesto un numero di pagina
+  const sendMessage = async () => {
+    if (!currentMessage.trim() || loading) return;
     
-    const lastUserMessage = messages[messages.length - 1].content;
-    await sendQueryToBackend(lastUserMessage, pageNumber);
-    
-    setPageNumber('');
-    setShowPageInput(false);
-  };
-
-  const sendQueryToBackend = async (query, page = null) => {
-    // Funzione esistente... non modificata
     try {
       setLoading(true);
       
-      const response = await axios.post(`${API_BASE_URL}/api/query`, { 
-        query: query,
-        page_number: page
-      });
+      // Aggiungi il messaggio dell'utente alla lista
+      const userMessage = currentMessage.trim();
+      setMessages(prev => [...prev, { type: 'user', content: userMessage }]);
+      setCurrentMessage('');
       
-      if (response.data.status === 'success') {
-        setMessages(prev => [...prev, { 
-          type: 'bot', 
-          content: response.data.response 
-        }]);
-      } else {
-        setMessages(prev => [...prev, { 
-          type: 'error', 
-          content: response.data.message || 'Si è verificato un errore' 
-        }]);
+      // Attiva la visualizzazione della chat
+      setShowChat(true);
+      
+      // Verifica se stiamo aspettando il numero di pagina
+      if (showPageInput) {
+        // Prova prima a estrarre un numero di pagina dalla risposta 
+        const detectedPageNumber = extractPageNumber(userMessage);
+        
+        if (detectedPageNumber) {
+          // L'utente ha fornito un numero di pagina in qualche formato (pagina X, figura X, ecc.)
+          await sendQueryToBackend(messages[messages.length-2].content, detectedPageNumber);
+          setShowPageInput(false);
+        } else if (/^\d+$/.test(userMessage)) {
+          // Fallback per un semplice numero (comportamento precedente)
+          await sendQueryToBackend(messages[messages.length-2].content, userMessage);
+          setShowPageInput(false);
+        } else {
+          // Non è stato fornito un numero di pagina riconoscibile
+          setLoading(false);
+          setMessages(prev => [...prev, { 
+            type: 'bot', 
+            content: "Mi dispiace, ma non sono riuscito a identificare il numero di pagina nella tua risposta. Potresti scriverlo in formato numerico (es. '42') o con la parola pagina (es. 'pagina 42')? Grazie per la pazienza!"
+          }]);
+          return;
+        }
+      }
+      // Verifica se siamo in modalità immagine (ma non stiamo già aspettando un numero di pagina)
+      else if (isImageMode) {
+        // Prova a estrarre il numero di pagina dal messaggio dell'utente
+        const detectedPageNumber = extractPageNumber(userMessage);
+        
+        if (detectedPageNumber) {
+          // Se è stato trovato un numero di pagina, invia direttamente la query con quel numero
+          await sendQueryToBackend(userMessage, detectedPageNumber);
+        } else {
+          // Se non è stato trovato un numero di pagina, richiedi all'utente di inserirlo
+          setShowPageInput(true);
+          setLoading(false);
+          setMessages(prev => [...prev, { 
+            type: 'bot', 
+            content: "📖 Per analizzare l'immagine che hai richiesto, avrei bisogno di sapere il numero di pagina. Potresti indicarmi quale pagina del documento desideri esaminare? Puoi scriverlo semplicemente come 'pagina 42' o solo '42', grazie!"
+          }]);
+          return;
+        }
+      }
+      else {
+        // Normale flusso di domanda e risposta
+        await sendQueryToBackend(userMessage);
       }
     } catch (error) {
-      console.error('Error sending query:', error);
-      let errorMsg = 'Errore di connessione al server';
-      if (error.response) {
-        errorMsg = `Errore: ${error.response.data.message || error.response.status}`;
-      }
+      console.error('Error sending message:', error);
       setMessages(prev => [...prev, { 
         type: 'error', 
-        content: errorMsg
+        content: 'Errore di connessione al server. Riprova più tardi.' 
       }]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Rimuovi la funzione handlePageSubmit che non è più necessaria
+
+  // Modifica sendQueryToBackend per gestire meglio la risposta quando serve una pagina
+  const sendQueryToBackend = async (query, page = null) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/query`, {
+        query,
+        page_number: page,
+        is_image_mode: isImageMode
+      });
+      
+      if (response.data.status === 'success') {
+        setMessages(prev => [...prev, { type: 'bot', content: response.data.response }]);
+      } else if (response.data.status === 'page_required') {
+        // Invece di mostrare l'input separato, aggiungiamo un messaggio alla chat
+        setMessages(prev => [...prev, { 
+          type: 'bot', 
+          content: "📖 Ho bisogno di un piccolo aiuto: potresti indicarmi il numero di pagina dell'immagine che vorresti analizzare? Grazie!" 
+        }]);
+        setShowPageInput(true);
+      } else {
+        throw new Error(response.data.message || 'Errore sconosciuto');
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      setMessages(prev => [...prev, { 
+        type: 'error', 
+        content: `Errore: ${error.message}` 
+      }]);
+    }
+  };
+
+  // Funzione per attivare/disattivare la modalità immagine
+  const toggleImageMode = () => {
+    setIsImageMode(prev => !prev);
+    // Se disattiviamo la modalità immagine, nascondi anche l'input della pagina
+    if (isImageMode) {
+      setShowPageInput(false);
+      setPageNumber('');
     }
   };
 
@@ -388,6 +469,15 @@ function App() {
                   <FaArrowRight />
                 </button>
               </div>
+              <div className="image-mode-toggle">
+                <button 
+                  className={`image-mode-btn ${isImageMode ? 'active' : ''}`} 
+                  onClick={toggleImageMode}
+                >
+                  {isImageMode ? 'Exit Image Mode' : 'Image Analysis Mode'}
+                </button>
+                {isImageMode && <span className="image-mode-indicator">Image Analysis Mode Active</span>}
+              </div>
             </section>
           </>
         ) : (
@@ -415,6 +505,12 @@ function App() {
               ) : (
                 messages.map((msg, index) => (
                   <div key={index} className={`message ${msg.type}`}>
+                    {msg.type === 'bot' && (
+                      <div className="message-header">
+                        <ClarifAILogo className="message-logo" />
+                        <span className="message-title">Clarif<span className="message-title-highlight">AI</span></span>
+                      </div>
+                    )}
                     <div className="message-content">
                       {msg.type === 'bot' ? (
                         <ReactMarkdown 
@@ -441,23 +537,6 @@ function App() {
               )}
             </div>
             
-            {/* Page Input for Image Queries */}
-            {showPageInput && (
-              <div className="page-input-container">
-                <p>La tua domanda sembra riferirsi ad un'immagine. Specifica il numero di pagina:</p>
-                <div className="page-input-row">
-                  <input
-                    type="number"
-                    min="1"
-                    value={pageNumber}
-                    onChange={(e) => setPageNumber(e.target.value)}
-                    placeholder="Numero pagina"
-                  />
-                  <button onClick={handlePageSubmit}>Invia</button>
-                </div>
-              </div>
-            )}
-            
             {/* Message Input */}
             <div className="input-area">
               <input
@@ -465,15 +544,22 @@ function App() {
                 value={currentMessage}
                 onChange={(e) => setCurrentMessage(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="Scrivi la tua domanda..."
-                disabled={loading || showPageInput}
+                placeholder={isImageMode && showPageInput ? "Inserisci il numero di pagina..." : isImageMode ? "Descrivi cosa vuoi analizzare nell'immagine..." : "Scrivi la tua domanda..."}
+                disabled={loading}
               />
               <button 
-                className="send-btn"
-                onClick={sendMessage}
-                disabled={!currentMessage.trim() || loading || showPageInput}
+                className={`image-mode-btn ${isImageMode ? 'active' : ''}`}
+                onClick={toggleImageMode}
+                disabled={loading}
               >
-                Invia
+                {isImageMode ? 'Exit Image Mode' : 'Image'}
+              </button>
+              <button 
+                className="search-btn"
+                onClick={sendMessage}
+                disabled={!currentMessage.trim() || loading}
+              >
+                <FaArrowRight />
               </button>
             </div>
           </div>

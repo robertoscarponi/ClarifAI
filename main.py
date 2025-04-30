@@ -119,9 +119,10 @@ def process_query():
         
         # Gestione del contesto immagine
         image_context = ""
-        is_image_query = re.search(r'immag|figur|schem|diagram|grafic|foto', original_query.lower()) is not None
+        # Sostituisci il re.search con un flag esplicito inviato dal frontend
+        is_image_mode = data.get('is_image_mode', False)
         
-        if is_image_query:
+        if is_image_mode:
             # Verifica se è specificata la pagina nella richiesta
             page_number = data.get('page_number')
             if page_number:
@@ -143,6 +144,13 @@ def process_query():
                         "status": "error", 
                         "message": f"Errore nell'analisi dell'immagine: {str(e)}"
                     }), 500
+            else:
+                # Se siamo in modalità immagine ma non è specificata la pagina, 
+                # richiedi al client di fornirla
+                return jsonify({
+                    "status": "page_required",
+                    "message": "Per analizzare un'immagine, specifica il numero di pagina."
+                })
 
         # Riscrittura della query
         rewritten_query = rewrite_query(original_query)

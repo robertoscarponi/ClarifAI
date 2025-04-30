@@ -299,7 +299,7 @@ body {
   align-self: flex-start;
   background-color: transparent; /* Rimuove lo sfondo */
   color: var(--text-color); /* Usa il colore principale del testo */
-  padding: 0; /* Rimuove il padding del box */
+  padding: 8px 0; /* Aggiunto un po' di padding verticale */
   border-radius: 0; /* Rimuove i bordi arrotondati */
   max-width: 100%; /* Assicura che il testo occupi tutta la larghezza disponibile */
   margin-bottom: 24px; /* Aumenta la separazione tra messaggi */
@@ -362,6 +362,9 @@ body {
   border-top: 1px solid var(--border-color);
   border-bottom-left-radius: 1rem;
   border-bottom-right-radius: 1rem;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative; /* Assicura che il search-btn sia posizionato correttamente */
 }
 
 .input-area input {
@@ -378,6 +381,11 @@ body {
 .input-area input:focus {
   border-color: var(--primary-coral); /* Cambiato da #7b68ee a var(--primary-coral) */
   box-shadow: 0 0 0 2px rgba(225, 90, 70, 0.2); /* Aggiunto un sottile effetto glow */
+}
+
+.input-area .search-btn {
+  position: static; /* Rimuove il posizionamento assoluto quando è nella chat */
+  margin-left: 0.5rem; /* Aggiunge un po' di spazio tra l'input e il pulsante */
 }
 
 .send-btn {
@@ -397,10 +405,11 @@ body {
 }
 
 .page-input-container {
-  background-color: #f1f1f1;
+  background-color: var(--surface-color);
   padding: 15px 20px;
   margin: 0 20px 15px;
   border-radius: 8px;
+  border: 1px solid var(--primary-teal);
 }
 
 .page-input-row {
@@ -898,6 +907,17 @@ body:has(.sidebar.open) .header {
   color: white; /* Cambiato da var(--primary-orange) a white */
 }
 
+/* Modifica il colore dell'icona della luna in modalità light */
+.theme-icon {
+  color: #333333; /* Colore scuro per la modalità light */
+  font-size: 1rem;
+}
+
+/* Mantieni l'icona del sole bianca in modalità dark */
+:root.dark-mode .theme-icon {
+  color: white;
+}
+
 /* Aggiornamenti per il tema scuro */
 :root.dark-mode .welcome-message h2 {
   color: var(--primary-coral);
@@ -1152,4 +1172,67 @@ body:has(.sidebar.open) .header {
   background-color: #5FBDBB;
   color: white;
   border-bottom: 1px solid #4da8a6; /* Bordo leggermente più scuro */
+}
+
+/* Stile per i pulsanti modalità immagine */
+.image-mode-btn {
+  background-color: var(--primary-teal);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0.5rem 0.5rem 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.image-mode-btn.active {
+  background-color: var(--primary-coral);
+}
+
+.image-mode-btn:hover {
+  opacity: 0.9;
+}
+
+.image-mode-toggle {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.image-mode-indicator {
+  font-size: 0.9rem;
+  color: var(--primary-coral);
+  margin-left: 0.5rem;
+}
+
+/* Aggiungi questi stili per l'header dei messaggi del bot */
+.message-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 6px;
+}
+
+.message-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.message-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: -0.5px;
+}
+
+.message-title-highlight {
+  background: linear-gradient(45deg, var(--primary-orange), var(--primary-coral));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
 }
