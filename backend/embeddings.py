@@ -13,14 +13,14 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-# Directory per la cache e la persistenza
+# Directories for cache and persistence
 CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
 PERSIST_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chromadb_store")
 os.makedirs(CACHE_DIR, exist_ok=True)
 os.makedirs(PERSIST_DIR, exist_ok=True)
 
 def compute_chunk_hash(chunk):
-    """Calcola un hash univoco per il chunk."""
+    """Computes a unique hash for the chunk."""
     return hashlib.sha256(chunk.encode("utf-8")).hexdigest()
 
 def extract_text_from_pdf(pdf_path):
@@ -48,7 +48,7 @@ genai.configure(api_key=gemini_api_key)
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
 def call_embed_api(chunk):
-    """Funzione con retry automatico per chiamare l'API di embedding"""
+    """Function with automatic retry to call the embedding API"""
     result = genai.embed_content(
         model="models/text-embedding-004",
         content=chunk
@@ -56,7 +56,7 @@ def call_embed_api(chunk):
     return result
 
 def generate_embeddings(texts):
-    """Genera embeddings per tutti i chunks usando cache locale."""
+    """Generates embeddings for all chunks using local cache."""
     logger.info("Generating embeddings for text chunks...")
     
     embeddings = []
@@ -66,7 +66,7 @@ def generate_embeddings(texts):
         chunk_hash = compute_chunk_hash(chunk)
         cache_file = os.path.join(CACHE_DIR, f"{chunk_hash}.json")
         
-        # Verifica se l'embedding è già in cache
+        # Check if the embedding is already in cache
         if os.path.exists(cache_file):
             logger.info(f"Embedding for chunk {i+1}/{len(texts)} found in cache")
             with open(cache_file, 'r') as f:
@@ -74,13 +74,13 @@ def generate_embeddings(texts):
                 embeddings.append(cache_data["embedding"])
         else:
             logger.info(f"Generating embedding for chunk {i+1}/{len(texts)}...")
-            # Usa la funzione con retry
+            # Use function with retry
             result = call_embed_api(chunk) 
             embedding = result['embedding']
             embeddings.append(embedding)
             new_embeddings_count += 1
             
-            # Salva in cache
+            # Save to cache
             cache_data = {
                 "chunk": chunk,
                 "embedding": embedding,
@@ -93,23 +93,23 @@ def generate_embeddings(texts):
     return embeddings
 
 def store_embeddings_in_chromadb(chunks, chunk_embeddings):
-    """Salva gli embeddings in ChromaDB con persistenza e gestione dei duplicati."""
+    """Saves embeddings in ChromaDB with persistence and duplicate handling."""
     logger.info("Storing embeddings in ChromaDB with persistence...")
     
-    # Usa un client persistente
+    # Use a persistent client
     client = chromadb.Client(Settings(persist_directory=PERSIST_DIR))
-    collection = client.get_or_create_collection(name="school_book_chuncks")
+    collection = client.get_or_create_collection(name="school_book_chunks")
     
-    # Calcola hash per ogni chunk
+    # Calculate hash for each chunk
     ids = [compute_chunk_hash(chunk) for chunk in chunks]
     
-    # Rimuovi duplicati dalla lista di chunk prima di provare ad aggiungerli
+    # Remove duplicates from the chunk list before trying to add them
     unique_data = {}
     for chunk, embedding, chunk_id in zip(chunks, chunk_embeddings, ids):
         if chunk_id not in unique_data:
             unique_data[chunk_id] = (chunk, embedding)
     
-    # Recupera gli ID esistenti
+    # Retrieve existing IDs
     existing_ids = set()
     try:
         result = collection.get()
@@ -119,7 +119,7 @@ def store_embeddings_in_chromadb(chunks, chunk_embeddings):
     except Exception as e:
         logger.warning(f"Error retrieving existing IDs: {e}")
     
-    # Filtra solo i chunk nuovi
+    # Filter only new chunks
     new_chunks = []
     new_embeddings = []
     new_ids = []
@@ -132,7 +132,7 @@ def store_embeddings_in_chromadb(chunks, chunk_embeddings):
             new_ids.append(chunk_id)
             new_metadatas.append({"source": "pdf"})
     
-    # Aggiungi solo i nuovi chunk
+    # Add only new chunks
     if new_chunks:
         logger.info(f"Adding {len(new_chunks)} new chunks to ChromaDB.")
         collection.add(
@@ -148,19 +148,19 @@ def store_embeddings_in_chromadb(chunks, chunk_embeddings):
     return collection
 
 def process_pdf_with_images(pdf_path):
-    """Elabora un PDF estraendo il testo o caricandolo dalla cache."""
-    # Prova a caricare i chunks dalla cache
+    """Process a PDF by extracting text or loading it from cache."""
+    # Try to load chunks from cache
     cached_chunks = get_pdf_cached_chunks(pdf_path)
     if (cached_chunks):
-        logger.info(f"Utilizzando {len(cached_chunks)} chunks dalla cache")
+        logger.info(f"Using {len(cached_chunks)} chunks from cache")
         return cached_chunks
     
-    # Se non ci sono chunks in cache, estrai il testo
-    logger.info(f"Nessun chunk in cache trovato per {os.path.basename(pdf_path)}, procedendo con l'estrazione")
+    # If there are no chunks in cache, extract the text
+    logger.info(f"No cache chunks found for {os.path.basename(pdf_path)}, proceeding with extraction")
     text = extract_text_from_pdf(pdf_path)
     text_chunks = chunk_text(text)
     
-    # Salva i chunks per utilizzo futuro
+    # Save chunks for future use
     save_pdf_chunks(pdf_path, text_chunks)
     
     return text_chunks
@@ -170,39 +170,39 @@ import hashlib
 import json
 import pathlib
 
-# Aggiungi questa nuova funzione
+# Add this new function
 def get_pdf_cached_chunks(pdf_path):
-    """Recupera i chunks salvati per un PDF specifico o restituisce None se non esistono."""
+    """Retrieves saved chunks for a specific PDF or returns None if they don't exist."""
     pdf_filename = os.path.basename(pdf_path)
     pdf_name = os.path.splitext(pdf_filename)[0]
     pdf_hash = hashlib.md5(pdf_path.encode()).hexdigest()[:10]
     
-    # Directory per i chunks di questo PDF specifico
+    # Directory for chunks of this specific PDF
     pdf_chunks_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pdf_chunks")
     os.makedirs(pdf_chunks_dir, exist_ok=True)
     
     chunks_file = os.path.join(pdf_chunks_dir, f"{pdf_name}_{pdf_hash}.json")
     
     if os.path.exists(chunks_file):
-        logger.info(f"Trovati chunks memorizzati per {pdf_filename}, caricando dalla cache...")
+        logger.info(f"Found stored chunks for {pdf_filename}, loading from cache...")
         with open(chunks_file, 'r', encoding='utf-8') as f:
             return json.load(f)
     return None
 
-# Aggiungi questa nuova funzione
+# Add this new function
 def save_pdf_chunks(pdf_path, chunks):
-    """Salva i chunks estratti da un PDF specifico."""
+    """Saves chunks extracted from a specific PDF."""
     pdf_filename = os.path.basename(pdf_path)
     pdf_name = os.path.splitext(pdf_filename)[0]
     pdf_hash = hashlib.md5(pdf_path.encode()).hexdigest()[:10]
     
-    # Directory per i chunks di questo PDF specifico
+    # Directory for chunks of this specific PDF
     pdf_chunks_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pdf_chunks")
     os.makedirs(pdf_chunks_dir, exist_ok=True)
     
     chunks_file = os.path.join(pdf_chunks_dir, f"{pdf_name}_{pdf_hash}.json")
     
-    logger.info(f"Salvando {len(chunks)} chunks per {pdf_filename}...")
+    logger.info(f"Saving {len(chunks)} chunks for {pdf_filename}...")
     with open(chunks_file, 'w', encoding='utf-8') as f:
         json.dump(chunks, f, ensure_ascii=False)
 

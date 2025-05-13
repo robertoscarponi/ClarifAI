@@ -5,19 +5,19 @@ import os
 
 def render_pdf_pages(pdf_path, output_dir="rendered_pages", pages=None):
     """
-    Renderizza intere pagine del PDF come immagini.
+    Renders entire PDF pages as images.
     
     Args:
-        pdf_path: Percorso al file PDF
-        output_dir: Directory dove salvare le immagini renderizzate
-        pages: Lista di numeri di pagina da renderizzare (base 0), o None per tutte
+        pdf_path: Path to the PDF file
+        output_dir: Directory where to save the rendered images
+        pages: List of page numbers to render (0-based), or None for all pages
     """
     os.makedirs(output_dir, exist_ok=True)
     
     image_paths = []
     doc = fitz.open(pdf_path)
     
-    # Se pages è None, renderizza tutte le pagine
+    # If pages is None, render all pages
     if pages is None:
         pages = range(len(doc))
     
@@ -27,15 +27,15 @@ def render_pdf_pages(pdf_path, output_dir="rendered_pages", pages=None):
             
         page = doc[page_num]
         
-        # Renderizza pagina con risoluzione maggiorata (zoom=2.0)
+        # Render page with increased resolution (zoom=2.0)
         pix = page.get_pixmap(matrix=fitz.Matrix(2.0, 2.0))
         
-        # Salva l'immagine
+        # Save the image
         image_filename = f"page_{page_num+1}.png"
         image_path = os.path.join(output_dir, image_filename)
         pix.save(image_path)
         
-        # Salva il percorso e il numero di pagina
+        # Save the path and page number
         image_paths.append((image_path, page_num))
     
     return image_paths
