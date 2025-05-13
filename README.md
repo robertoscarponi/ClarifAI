@@ -43,17 +43,7 @@ This project leverages **Retrieval-Augmented Generation (RAG)** to deliver preci
 
 ---
 
-## 🎯 Target Audience & Value Proposition
 
-- **Who:** University & high school students.
-- **Problem Solved:** Quickly find specific answers and review concepts within large study PDFs—no more endless scrolling or unfocused AI replies.
-- **Value:** A digital “study buddy”:
-    - Understands key concepts in your own documents.
-    - Finds precise answers fast.
-    - Enables interactive review.
-    - Keeps your study focused on what matters.
-
----
 
 ## 📝 Getting Started
 
