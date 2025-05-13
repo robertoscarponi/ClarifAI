@@ -12,5 +12,5 @@ lib/
 share/
 pdf_chunks/
 rendered_pages/
-package-lock.json/
-package.json/
+package-lock.json
+package.json
