@@ -7,7 +7,7 @@ const ClarifAILogo = ({ className }) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    {/* Elemento curvo superiore (rosso-arancione) */}
+    {/* Upper curved element (red-orange) */}
     <path
       d="M100,30 
          C140,30 170,60 170,100
@@ -19,7 +19,7 @@ const ClarifAILogo = ({ className }) => (
       stroke="none"
     />
     
-    {/* Elemento curvo inferiore (blu-turchese) */}
+    {/* Lower curved element (blue-turquoise) */}
     <path
       d="M100,170
          C60,170 30,140 30,100
@@ -32,14 +32,14 @@ const ClarifAILogo = ({ className }) => (
     />
     
     <defs>
-      {/* Gradiente per la parte rossa-arancione */}
+      {/* Gradient for the red-orange part */}
       <linearGradient id="grad1" x1="60" y1="40" x2="160" y2="120" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#F24C3D" />
         <stop offset="50%" stopColor="#F5762A" />
         <stop offset="100%" stopColor="#F9A826" />
       </linearGradient>
       
-      {/* Gradiente per la parte blu-turchese */}
+      {/* Gradient for the blue-turquoise part */}
       <linearGradient id="grad2" x1="140" y1="160" x2="40" y2="80" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#22A699" />
         <stop offset="50%" stopColor="#5FBDBB" />

@@ -4,7 +4,7 @@
   padding: 0;
 }
 
-/* Nuovi colori da applicare nel CSS */
+
 :root {
   --primary-orange: #F2994A;
   --primary-coral: #E15A46;
@@ -16,7 +16,7 @@
   --text-medium: #666666;
   --text-light: #999999;
   
-  /* Colori di base del tema chiaro */
+  /* Base colors for light theme */
   --background-color: #F9F9F7;
   --surface-color: #FFFFFF;
   --text-color: #333333;
@@ -37,7 +37,7 @@
   --chat-header-color: white;
 }
 
-/* Tema scuro */
+/* Dark theme */
 :root.dark-mode {
   --background-color: #121212;
   --surface-color: #1E1E1E;
@@ -119,17 +119,17 @@ body {
   left: 0;
   top: 0;
   height: 100%;
-  width: 250px; /* Ridotta da 300px a 250px */
+  width: 250px; 
   background-color: var(--sidebar-bg);
   box-shadow: 0 0 10px var(--shadow-color);
   transform: translateX(-100%);
-  transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1); /* Aumentato da 0.8s a 1.2s */
-  z-index: 1050; /* Aumentato lo z-index per assicurarsi che stia sopra al contenuto */
+  transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1); 
+  z-index: 1050; 
   display: flex;
   flex-direction: column;
 }
 
-/* Aggiungi un overlay con transizione fluida */
+/* Add overlay with smooth transition */
 .sidebar-overlay {
   position: fixed;
   top: 0;
@@ -137,7 +137,7 @@ body {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.3);
-  z-index: 1040; /* Appena sotto la sidebar */
+  z-index: 1040; 
   opacity: 0;
   visibility: hidden;
   transition: opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1), visibility 0s 2s;
@@ -232,8 +232,8 @@ body {
 .chat-header {
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
-  background-color: #5FBDBB; /* Azzurrino del logo */
-  color: white; /* Testo bianco per miglior contrasto */
+  background-color: #5FBDBB; 
+  color: white; 
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
 }
@@ -281,7 +281,7 @@ body {
   border-radius: 18px;
   margin-bottom: 15px;
   line-height: 1.5;
-  /* Rimuovi il padding e altri stili che andrebbero applicati solo ai messaggi utente */
+ 
 }
 
 .message.user {
@@ -289,24 +289,24 @@ body {
   background-color: var(--message-user-bg);
   color: var(--message-user-color);
   border-bottom-right-radius: 4px;
-  max-width: 80%; /* Mantiene la larghezza limitata per i messaggi utente */
+  max-width: 80%; 
   padding: 12px 16px;
   border-radius: 18px;
 }
 
-/* Trova la classe .message.bot e sostituiscila con questa */
+
 .message.bot {
   align-self: flex-start;
-  background-color: transparent; /* Rimuove lo sfondo */
-  color: var(--text-color); /* Usa il colore principale del testo */
-  padding: 8px 0; /* Aggiunto un po' di padding verticale */
-  border-radius: 0; /* Rimuove i bordi arrotondati */
-  max-width: 100%; /* Assicura che il testo occupi tutta la larghezza disponibile */
-  margin-bottom: 24px; /* Aumenta la separazione tra messaggi */
-  box-shadow: none; /* Rimuove eventuali ombre */
+  background-color: transparent; 
+  color: var(--text-color); 
+  padding: 8px 0; 
+  border-radius: 0; 
+  max-width: 100%; 
+  margin-bottom: 24px; 
+  box-shadow: none; 
 }
 
-/* Aggiorna anche il contenuto del messaggio per estendersi correttamente */
+/* Also update the message content to extend properly */
 .message.bot .message-content {
   width: 100%;
   line-height: 1.6;
@@ -364,7 +364,7 @@ body {
   border-bottom-right-radius: 1rem;
   align-items: center;
   gap: 0.5rem;
-  position: relative; /* Assicura che il search-btn sia posizionato correttamente */
+  position: relative; 
 }
 
 .input-area input {
@@ -379,13 +379,13 @@ body {
 }
 
 .input-area input:focus {
-  border-color: var(--primary-coral); /* Cambiato da #7b68ee a var(--primary-coral) */
-  box-shadow: 0 0 0 2px rgba(225, 90, 70, 0.2); /* Aggiunto un sottile effetto glow */
+  border-color: var(--primary-coral); 
+  box-shadow: 0 0 0 2px rgba(225, 90, 70, 0.2); 
 }
 
 .input-area .search-btn {
-  position: static; /* Rimuove il posizionamento assoluto quando è nella chat */
-  margin-left: 0.5rem; /* Aggiunge un po' di spazio tra l'input e il pulsante */
+  position: static; 
+  margin-left: 0.5rem; 
 }
 
 .send-btn {
@@ -484,25 +484,25 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem 1rem 5.5rem; /* Ridotto il padding a sinistra per adattarsi al pulsante più piccolo */
+  padding: 1rem 2rem 1rem 5.5rem; 
   background-color: var(--header-bg);
   border-bottom: 1px solid var(--border-color);
   transition: padding-left 2s cubic-bezier(0.19, 1, 0.22, 1), background-color 0.3s, border-color 0.3s;
-  position: relative; /* Aggiunge position relative per il posizionamento corretto */
+  position: relative; 
   z-index: 1000;
 }
 
-/* Quando la sidebar è aperta, sposta l'header verso destra */
+/* When sidebar is open, shift the header to the right */
 body:has(.sidebar.open) .header {
-  padding-left: 280px; /* Un po' più di spazio rispetto alla larghezza della sidebar (250px) */
+  padding-left: 280px; /* Slightly more space than sidebar width (250px) */
 }
 
-/* Assicurati che il logo non venga nascosto anche durante la transizione */
+/* Ensure logo isn't hidden during transition */
 .logo {
   display: flex;
   align-items: center;
-  margin-left: 0.8rem; /* Ridotto leggermente */
-  z-index: 1000; /* Assicura che il logo stia sopra altri elementi */
+  margin-left: 0.8rem; 
+  z-index: 1000; 
   position: relative;
   transition: margin-left 2s cubic-bezier(0.19, 1, 0.22, 1);
 }
@@ -520,7 +520,7 @@ body:has(.sidebar.open) .header {
 
 .navigation ul {
   display: flex;
-  align-items: center; /* Assicura che tutti gli elementi siano allineati verticalmente */
+  align-items: center; 
   margin: 0;
   padding: 0;
   list-style: none;
@@ -557,7 +557,7 @@ body:has(.sidebar.open) .header {
   align-items: center;
   padding: 2rem;
   margin-top: 1rem;
-  transition: margin-left 2s cubic-bezier(0.19, 1, 0.22, 1); /* Rimuovi la transizione sul margin */
+  transition: margin-left 2s cubic-bezier(0.19, 1, 0.22, 1); 
 }
 
 .hero-section {
@@ -575,7 +575,7 @@ body:has(.sidebar.open) .header {
 }
 
 .subtitle {
-  font-size: 1rem; /* Reso leggermente più piccolo */
+  font-size: 1rem; 
   color: var(--text-color-tertiary);
   max-width: 800px;
   line-height: 1.6;
@@ -622,8 +622,8 @@ body:has(.sidebar.open) .header {
 }
 
 .search-container input:focus {
-  border-color: var(--primary-coral); /* Cambiato da var(--primary-teal) a var(--primary-coral) */
-  box-shadow: 0 0 0 2px rgba(225, 90, 70, 0.2); /* Aggiunto un sottile effetto glow */
+  border-color: var(--primary-coral); 
+  box-shadow: 0 0 0 2px rgba(225, 90, 70, 0.2); 
 }
 
 .search-btn {
@@ -683,18 +683,18 @@ body:has(.sidebar.open) .header {
   background-color: var(--card-bg);
   border-radius: 1rem;
   box-shadow: 0 2px 10px var(--shadow-color);
-  transition: none; /* Rimuovi la transizione sul margin */
+  transition: none; 
 }
 
 .chat-section.sidebar-open {
-  margin-left: 0; /* Non spostare più il contenuto */
+  margin-left: 0; 
 }
 
 .chat-header {
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
-  background-color: #5FBDBB; /* Azzurrino del logo */
-  color: white; /* Testo bianco per miglior contrasto */
+  background-color: #5FBDBB; 
+  color: white; 
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
 }
@@ -703,13 +703,13 @@ body:has(.sidebar.open) .header {
   font-size: 1.2rem;
 }
 
-/* Modifica per allineare il pulsante sidebar con il logo */
+/* Modification to align sidebar button with the logo */
 .sidebar-toggle {
   position: fixed;
-  top: 0.87rem; /* Ridotto ulteriormente da 1.05rem per un allineamento perfetto */
+  top: 0.87rem; 
   left: 1.7rem;
-  background: transparent; /* Rimosso lo sfondo colorato */
-  color: var(--text-color); /* Usa il colore del testo principale che si adatta al tema */
+  background: transparent; 
+  color: var(--text-color);
   border: none;
   border-radius: 50%;
   width: 3rem;
@@ -766,7 +766,7 @@ body:has(.sidebar.open) .header {
   }
 }
 
-/* Aggiungi questi stili alla fine del file */
+/* Add these styles at the end of the file */
 
 .init-error {
   margin-top: 1rem;
@@ -822,7 +822,7 @@ body:has(.sidebar.open) .header {
   color: #999;
 }
 
-/* Nuovi stili per il logo */
+/* New styles for the logo */
 .logo-svg {
   width: 40px;
   height: 40px;
@@ -838,87 +838,87 @@ body:has(.sidebar.open) .header {
   height: 60px;
 }
 
-/* Aggiungi queste regole CSS */
 
-/* Adatta il main container quando la sidebar è aperta */
+
+/* Adapt main container when sidebar is open */
 .main-container.sidebar-open {
   margin-left: 300px;
   transition: margin-left 0.3s ease;
 }
 
-/* Modifica per il pulsante della sidebar in modo che sia sempre visibile */
+/* Modification for sidebar button to always be visible */
 .sidebar-toggle {
   z-index: 1001;
 }
 
-/* Regola la transizione del contenuto principale */
+/* Adjust main content transition */
 .main-container {
   transition: margin-left 2s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-/* Responsive design per quando la sidebar è aperta */
+/* Responsive design for when sidebar is open */
 @media (max-width: 768px) {
   .main-container.sidebar-open {
     margin-left: 0;
   }
 }
 
-/* Aggiungere stili per il pulsante toggle tema */
+/* Add styles for theme toggle button */
 .theme-toggle-btn {
-  background: transparent; /* Rimosso lo sfondo colorato */
+  background: transparent; 
   border: none;
   cursor: pointer;
   font-size: 1.2rem;
-  color: var(--text-color); /* Usa il colore del testo principale che si adatta al tema */
+  color: var(--text-color); 
   padding: 0.5rem;
   border-radius: 50%;
-  width: 2.2rem; /* Dimensione fissa per meglio allinearsi con gli altri elementi */
+  width: 2.2rem; 
   height: 2.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: transform 0.3s;
   outline: none;
-  margin-top: -2px; /* Piccola regolazione per allineamento verticale */
+  margin-top: -2px; 
 }
 
-/* Aggiorna il colore dell'icona del tema per entrambe le modalità */
+/* Update theme icon color for both modes */
 .theme-icon {
-  color: var(--text-color); /* Usa il colore del testo principale invece del bianco fisso */
+  color: var(--text-color); 
   font-size: 1rem;
 }
 
 :root.dark-mode .theme-icon {
-  color: var(--text-color); /* Usa il colore del testo principale in modalità scura */
+  color: var(--text-color); 
 }
 
-/* Aggiorna anche lo stile hover per entrambi i pulsanti */
+/* Update hover style for both buttons */
 .sidebar-toggle:hover, .theme-toggle-btn:hover {
-  background-color: var(--border-color); /* Leggero sfondo al passaggio del mouse */
+  background-color: var(--border-color); 
 }
 
-/* Rendi l'icona più visibile */
+/* Make icon more visible */
 .theme-icon {
   color: white;
-  font-size: 1rem; /* Leggermente più piccola per un look più elegante */
+  font-size: 1rem; 
 }
 
 :root.dark-mode .theme-icon {
-  color: white; /* Cambiato da var(--primary-orange) a white */
+  color: white; 
 }
 
-/* Modifica il colore dell'icona della luna in modalità light */
+/* Change moon icon color in light mode */
 .theme-icon {
-  color: #333333; /* Colore scuro per la modalità light */
+  color: #333333; 
   font-size: 1rem;
 }
 
-/* Mantieni l'icona del sole bianca in modalità dark */
+/* Keep sun icon white in dark mode */
 :root.dark-mode .theme-icon {
   color: white;
 }
 
-/* Aggiornamenti per il tema scuro */
+/* Updates for dark theme */
 :root.dark-mode .welcome-message h2 {
   color: var(--primary-coral);
 }
@@ -932,7 +932,7 @@ body:has(.sidebar.open) .header {
 }
 
 :root.dark-mode .sidebar-toggle {
-  background: transparent; /* Rimosso lo sfondo colorato anche in modalità scura */
+  background: transparent; 
 }
 
 :root.dark-mode .bottom-section h2 {
@@ -947,24 +947,24 @@ body:has(.sidebar.open) .header {
   background-color: rgba(255, 77, 79, 0.2);
 }
 
-/* Assicurarsi che le transizioni siano fluide */
+/* Ensure transitions are smooth */
 .clarif-ai * {
   transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
 
-/* Mantieni gli stili principali invariati */
+/* Keep main styles unchanged */
 
-/* Modifica lo stile del titolo per renderlo più grande e d'impatto */
+/* Modify title style to make it bigger and more impactful */
 .app-title {
   margin-left: 0.05rem;
-  font-size: 2rem; /* Aumenta la dimensione del font */
-  font-weight: 700; /* Rende il font più bold */
+  font-size: 2rem; /* Increase font size */
+  font-weight: 700; /* Make font more bold */
   color: var(--text-color);
-  font-family: 'Montserrat', sans-serif; /* Font più moderno e d'impatto */
-  letter-spacing: -0.5px; /* Riduce lo spazio tra le lettere */
+  font-family: 'Montserrat', sans-serif; /* More modern, impactful font */
+  letter-spacing: -0.5px; /* Reduce space between letters */
 }
 
-/* Stili per la parte "AI" in arancione */
+/* Styles for the "AI" part in orange */
 .highlight-ai {
   background: linear-gradient(45deg, var(--primary-orange), var(--primary-coral), var(--primary-orange), var(--primary-coral));
   background-size: 300% 300%;
@@ -979,7 +979,7 @@ body:has(.sidebar.open) .header {
 }
 
 :root.dark-mode .highlight-ai {
-  /* Stesse proprietà della versione light */
+  /* Same properties as light version */
   background: linear-gradient(45deg, var(--primary-orange), var(--primary-coral), var(--primary-orange), var(--primary-coral));
   background-size: 300% 300%;
   animation: 
@@ -991,7 +991,7 @@ body:has(.sidebar.open) .header {
   -webkit-text-fill-color: transparent;
 }
 
-/* Aggiorna lo stile della parte "AI" per avere un effetto sfumato */
+/* Update "AI" part style to have a gradient effect */
 .highlight-ai {
   background: linear-gradient(45deg, var(--primary-orange), var(--primary-coral), var(--primary-orange), var(--primary-coral));
   background-size: 300% 300%;
@@ -1000,10 +1000,10 @@ body:has(.sidebar.open) .header {
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  font-weight: 800; /* Mantenuto il bold esistente */
+  font-weight: 800; /* Kept existing bold */
 }
 
-/* Assicurati che funzioni anche in dark mode */
+/* Make sure it works in dark mode too */
 :root.dark-mode .highlight-ai {
   background: linear-gradient(45deg, var(--primary-orange), var(--primary-coral), var(--primary-orange), var(--primary-coral));
   background-size: 300% 300%;
@@ -1014,16 +1014,16 @@ body:has(.sidebar.open) .header {
   -webkit-text-fill-color: transparent;
 }
 
-/* Assicurati che in modalità scura i colori restino corretti */
+/* Make sure in dark mode colors remain correct */
 :root.dark-mode .app-title {
   color: var(--text-color);
 }
 
 :root.dark-mode .highlight-ai {
-  color: var(--primary-coral); /* Mantieni arancione anche in dark mode */
+  color: var(--primary-coral); /* Keep orange even in dark mode */
 }
 
-/* Aggiungi questa animazione keyframe */
+/* Add this keyframe animation */
 @keyframes gradientFlow {
   0% {
     background-position: 0% 50%;
@@ -1036,51 +1036,51 @@ body:has(.sidebar.open) .header {
   }
 }
 
-/* Aggiungi questa animazione keyframe */
+/* Add this keyframe animation */
 @keyframes glowPulse {
   0% { text-shadow: 0 0 5px rgba(225, 90, 70, 0.1); }
   50% { text-shadow: 0 0 12px rgba(242, 153, 74, 0.4), 0 0 20px rgba(242, 153, 74, 0.2); }
   100% { text-shadow: 0 0 5px rgba(225, 90, 70, 0.1); }
 }
 
-/* Aggiungi questi stili per il logo e titolo centrale */
+/* Add these styles for center logo and title */
 
 .center-logo {
   display: flex;
-  flex-direction: row; /* Cambiato da column a row per allinearli orizzontalmente */
-  align-items: center; /* Allineamento verticale al centro */
-  justify-content: center; /* Centrati orizzontalmente */
-  margin-bottom: 0.5rem; /* Ridotto lo spazio sotto */
-  gap: 0.05rem; /* Ridotto lo spazio tra logo e titolo */
+  flex-direction: row; /* Changed from column to row to align horizontally */
+  align-items: center; /* Vertical center alignment */
+  justify-content: center; /* Horizontally centered */
+  margin-bottom: 0.5rem; /* Reduced space below */
+  gap: 0.05rem; /* Reduced space between logo and title */
 }
 
 .hero-logo-svg {
-  width: 70px; /* Leggermente aumentato per bilanciare con il titolo */
+  width: 70px; /* Slightly increased to balance with title */
   height: 70px;
-  margin-top: 0; /* Rimosso l'offset esistente */
+  margin-top: 0; /* Removed existing offset */
 }
 
 .hero-title {
-  font-size: 3.2rem; /* Leggermente aumentato */
+  font-size: 3.2rem; /* Slightly increased */
   font-weight: 700;
   margin: 0;
-  padding-bottom: 0.15rem; /* Compensa la differenza di altezza ottica */
-  margin-top: 0.86rem; /* Aggiunto per spostare il titolo leggermente in basso */
+  padding-bottom: 0.15rem; /* Compensates for optical height difference */
+  margin-top: 0.86rem; /* Added to shift title slightly down */
   color: var(--text-color);
   font-family: 'Montserrat', sans-serif;
   letter-spacing: -0.5px;
-  line-height: 1; /* Impedisce che occupi più spazio verticale del necessario */
+  line-height: 1; /* Prevents it from taking more vertical space than needed */
 }
 
-/* Stile per il sottotitolo (precedentemente era il titolo h1) */
+/* Style for subtitle (previously was the h1 title) */
 .subtitle-heading {
   font-size: 1.8rem;
   font-weight: 600;
-  margin: 0.3rem 0 1rem; /* Ridotto il margine superiore */
+  margin: 0.3rem 0 1rem; /* Reduced top margin */
   color: var(--text-color-secondary);
 }
 
-/* Aggiorna lo stile della sezione hero */
+/* Update hero section style */
 .hero-section {
   text-align: center;
   margin-bottom: 2rem;
@@ -1089,7 +1089,7 @@ body:has(.sidebar.open) .header {
   align-items: center;
 }
 
-/* Assicura che gli stili dark mode funzionino anche per i nuovi elementi */
+/* Ensure dark mode styles work for new elements too */
 :root.dark-mode .hero-title {
   color: var(--text-color);
 }
@@ -1098,7 +1098,7 @@ body:has(.sidebar.open) .header {
   color: var(--text-color-secondary);
 }
 
-/* Aggiungi questo a App.css */
+/* Add this to App.css */
 .sidebar-section-title {
   font-size: 0.9rem;
   color: var(--text-color-tertiary);
@@ -1110,7 +1110,7 @@ body:has(.sidebar.open) .header {
   font-weight: 600;
 }
 
-/* Stili per il markdown renderizzato */
+/* Styles for rendered markdown */
 .message-content h1, 
 .message-content h2, 
 .message-content h3 {
@@ -1171,10 +1171,10 @@ body:has(.sidebar.open) .header {
 :root.dark-mode .chat-header {
   background-color: #5FBDBB;
   color: white;
-  border-bottom: 1px solid #4da8a6; /* Bordo leggermente più scuro */
+  border-bottom: 1px solid #4da8a6; /* Slightly darker border */
 }
 
-/* Stile per i pulsanti modalità immagine */
+/* Style for image mode buttons */
 .image-mode-btn {
   background-color: var(--primary-teal);
   color: white;
@@ -1207,7 +1207,7 @@ body:has(.sidebar.open) .header {
   margin-left: 0.5rem;
 }
 
-/* Aggiungi questi stili per l'header dei messaggi del bot */
+/* Add these styles for bot message header */
 .message-header {
   display: flex;
   align-items: center;

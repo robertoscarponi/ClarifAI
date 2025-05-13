@@ -7,14 +7,14 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
-import 'katex/dist/katex.min.css'; // Importa gli stili CSS di KaTeX
+import 'katex/dist/katex.min.css'; // Import KaTeX CSS styles
 
-const API_BASE_URL = 'http://127.0.0.1:5001'; // Usa la nuova porta
+const API_BASE_URL = 'http://127.0.0.1:5001'; // Use the new port
 
 function App() {
-  // Aggiungi stato per il tema
+  // Add theme state
   const [isDarkMode, setIsDarkMode] = useState(false);
-  // Stato esistente
+  // Existing state
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [books, setBooks] = useState([]);
   const [selectedBook, setSelectedBook] = useState(null);
@@ -26,24 +26,24 @@ function App() {
   const [pageNumber, setPageNumber] = useState('');
   const [showChat, setShowChat] = useState(false);
   const [initialized, setInitialized] = useState(false);
-  const [isImageMode, setIsImageMode] = useState(false); // Aggiungi un nuovo stato per la modalità immagine
+  const [isImageMode, setIsImageMode] = useState(false); // Add a new state for image mode
 
   const sidebarRef = useRef(null);
 
-  // Carica il libro e lo imposta all'avvio
+  // Load and set the book on startup
   useEffect(() => {
     fetchAndSelectDefaultBook();
   }, []);
 
-  // Modifica l'useEffect che gestisce il tema
+  // Modify the useEffect that manages the theme
   useEffect(() => {
-    // Controlla se c'è una preferenza salvata
+    // Check if there is a saved preference
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       setIsDarkMode(true);
     }
     
-    // Applica la classe all'elemento root invece che al body
+    // Apply the class to the root element instead of the body
     if (isDarkMode) {
       document.documentElement.classList.add('dark-mode');
       document.documentElement.classList.remove('light-mode');
@@ -52,15 +52,15 @@ function App() {
       document.documentElement.classList.add('light-mode');
     }
     
-    // Salva la preferenza
+    // Save the preference
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
-  // Aggiungi questo useEffect per gestire i clic all'esterno della sidebar
+  // Add this useEffect to handle clicks outside the sidebar
   useEffect(() => {
     function handleClickOutside(event) {
       if (isSidebarOpen && sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        // Verifica che non sia un clic sul pulsante della sidebar
+        // Check if it's not a click on the sidebar button
         const isSidebarToggle = event.target.closest('.sidebar-toggle');
         
         if (!isSidebarToggle) {
@@ -69,7 +69,7 @@ function App() {
       }
     }
     
-    // Aggiungi l'event listener
+    // Add the event listener
     document.addEventListener('mousedown', handleClickOutside);
     
     // Cleanup
@@ -78,18 +78,18 @@ function App() {
     };
   }, [isSidebarOpen]);
 
-  // Sostituisci la funzione toggleTheme con questa versione
+  // Replace the toggleTheme function with this version
   const toggleTheme = (event) => {
-    // Previeni la propagazione dell'evento in caso di problemi
+    // Prevent event propagation in case of problems
     if (event) event.stopPropagation();
     
     console.log("Toggling theme from:", isDarkMode, "to:", !isDarkMode);
     
-    // Usa il form funzionale del setter per garantire che usi sempre il valore più aggiornato
+    // Use the functional form of the setter to ensure it always uses the most updated value
     setIsDarkMode(prevMode => {
       const newMode = !prevMode;
       
-      // Applica immediatamente la classe per evitare ritardi di rendering
+      // Immediately apply the class to avoid rendering delays
       if (newMode) {
         document.documentElement.classList.add('dark-mode');
         document.documentElement.classList.remove('light-mode');
@@ -98,7 +98,7 @@ function App() {
         document.documentElement.classList.add('light-mode');
       }
       
-      // Salva la preferenza subito
+      // Save the preference immediately
       localStorage.setItem('theme', newMode ? 'dark' : 'light');
       
       return newMode;
@@ -108,16 +108,16 @@ function App() {
   const fetchAndSelectDefaultBook = async () => {
     try {
       setLoading(true);
-      // Verifica prima che il server sia raggiungibile
+      // First check if the server is reachable
       const response = await axios.get(`${API_BASE_URL}/api/books`, { timeout: 3000 });
       
       if (response.data.status === 'success' && response.data.books.length > 0) {
         setBooks(response.data.books);
         
-        // Seleziona automaticamente il primo libro
+        // Automatically select the first book
         const defaultBook = response.data.books[0];
         
-        // Invia la richiesta per caricare il libro di default
+        // Send the request to load the default book
         await axios.post(`${API_BASE_URL}/api/select-book`, {
           book_id: defaultBook.id
         });
@@ -126,19 +126,19 @@ function App() {
         setInitialized(true);
         setError(null);
       } else {
-        setError('Nessun libro disponibile nel server');
+        setError('No books available on the server');
       }
     } catch (error) {
       console.error('Error initializing app:', error);
-      // Imposta un messaggio di errore più specifico
+      // Set a more specific error message
       if (error.code === 'ECONNABORTED') {
-        setError('Timeout di connessione al server. Verifica che il backend sia in esecuzione.');
+        setError('Connection timeout to server. Verify that the backend is running.');
       } else if (error.response) {
-        setError(`Errore dal server: ${error.response.data.message || error.response.status}`);
+        setError(`Error from server: ${error.response.data.message || error.response.status}`);
       } else if (error.request) {
-        setError('Impossibile connettersi al server. Verifica che il backend sia in esecuzione su localhost:5001.');
+        setError('Unable to connect to server. Verify that the backend is running on localhost:5001.');
       } else {
-        setError(`Errore durante l'inizializzazione: ${error.message}`);
+        setError(`Error during initialization: ${error.message}`);
       }
     } finally {
       setLoading(false);
@@ -150,25 +150,25 @@ function App() {
   };
 
   const isImageQuery = (query) => {
-    return /immag|figur|schem|diagram|grafic|foto/i.test(query);
+    return /image|figure|schema|diagram|graphic|photo/i.test(query);
   };
 
-  // Aggiungi questa nuova funzione per estrarre il numero di pagina da una query
+  // Add this new function to extract page number from a query
   const extractPageNumber = (query) => {
-    // Pattern specifici con priorità più alta
+    // Specific patterns with higher priority
     const specificPatterns = [
-      /pagina\s+(\d+)/i,
-      /pag\.\s*(\d+)/i,
-      /pag\s+(\d+)/i,
+      /page\s+(\d+)/i,
+      /pg\.\s*(\d+)/i,
+      /pg\s+(\d+)/i,
       /p\.\s*(\d+)/i,
-      /pagina numero\s+(\d+)/i,
-      /numero\s+(\d+)/i,
-      /figura\s+(\d+)/i,
+      /page number\s+(\d+)/i,
+      /number\s+(\d+)/i,
+      /figure\s+(\d+)/i,
       /fig\.\s*(\d+)/i,
-      /immagine\s+(\d+)/i,
+      /image\s+(\d+)/i,
     ];
     
-    // Prova prima con i pattern specifici
+    // Try first with specific patterns
     for (const pattern of specificPatterns) {
       const match = query.match(pattern);
       if (match && match[1]) {
@@ -176,24 +176,24 @@ function App() {
       }
     }
     
-    // Fallback: cerca qualsiasi numero nella stringa
-    // Cattura numero all'inizio, al centro o alla fine della stringa
+    // Fallback: look for any number in the string
+    // Capture number at the beginning, middle, or end of the string
     const genericNumberPattern = /\b(\d+)\b/g;
     const matches = [...query.matchAll(genericNumberPattern)];
     
     if (matches.length > 0) {
-      // Se ci sono più numeri, seleziona quello che sembra più probabile essere un numero di pagina
+      // If there are multiple numbers, select the one that seems most likely to be a page number
       if (matches.length === 1) {
-        return matches[0][1]; // Se c'è un solo numero, restituiscilo
+        return matches[0][1]; // If there's only one number, return it
       } else {
-        // Se ci sono più numeri, cerca di capire qual è il numero di pagina
-        // Strategia: controlla se qualcuno dei numeri è preceduto da parole che potrebbero indicare una pagina
-        const pageIndicators = ["pag", "pagina", "pg", "p", "page", "fig", "figura", "immagine", "numero", "num"];
+        // If there are multiple numbers, try to figure out which is the page number
+        // Strategy: check if any of the numbers is preceded by words that might indicate a page
+        const pageIndicators = ["pg", "page", "p", "fig", "figure", "image", "number", "num"];
         
         for (const indicator of pageIndicators) {
           const indicatorIndex = query.toLowerCase().indexOf(indicator);
           if (indicatorIndex >= 0) {
-            // Trova il numero più vicino all'indicatore
+            // Find the number closest to the indicator
             let closestMatch = null;
             let minDistance = Infinity;
             
@@ -211,7 +211,7 @@ function App() {
           }
         }
         
-        // Se non troviamo un numero vicino a un indicatore, prendiamo il primo numero
+        // If we don't find a number near an indicator, take the first number
         return matches[0][1];
       }
     }
@@ -219,81 +219,81 @@ function App() {
     return null;
   };
 
-  // Modifica la funzione sendMessage per utilizzare extractPageNumber anche quando è richiesto un numero di pagina
+  // Modify the sendMessage function to use extractPageNumber also when a page number is required
   const sendMessage = async () => {
     if (!currentMessage.trim() || loading) return;
     
     try {
       setLoading(true);
       
-      // Aggiungi il messaggio dell'utente alla lista
+      // Add the user message to the list
       const userMessage = currentMessage.trim();
       setMessages(prev => [...prev, { type: 'user', content: userMessage }]);
       setCurrentMessage('');
       
-      // Attiva la visualizzazione della chat
+      // Activate chat display
       setShowChat(true);
       
-      // Verifica se stiamo aspettando il numero di pagina
+      // Check if we are waiting for a page number
       if (showPageInput) {
-        // Prova prima a estrarre un numero di pagina dalla risposta 
+        // First try to extract a page number from the response 
         const detectedPageNumber = extractPageNumber(userMessage);
         
         if (detectedPageNumber) {
-          // L'utente ha fornito un numero di pagina in qualche formato (pagina X, figura X, ecc.)
+          // The user has provided a page number in some format (page X, figure X, etc.)
           await sendQueryToBackend(messages[messages.length-2].content, detectedPageNumber);
           setShowPageInput(false);
         } else if (/^\d+$/.test(userMessage)) {
-          // Fallback per un semplice numero (comportamento precedente)
+          // Fallback for a simple number (previous behavior)
           await sendQueryToBackend(messages[messages.length-2].content, userMessage);
           setShowPageInput(false);
         } else {
-          // Non è stato fornito un numero di pagina riconoscibile
+          // No recognizable page number was provided
           setLoading(false);
           setMessages(prev => [...prev, { 
             type: 'bot', 
-            content: "Mi dispiace, ma non sono riuscito a identificare il numero di pagina nella tua risposta. Potresti scriverlo in formato numerico (es. '42') o con la parola pagina (es. 'pagina 42')? Grazie per la pazienza!"
+            content: "I'm sorry, but I couldn't identify a page number in your response. Could you write it in numeric format (e.g. '42') or with the word page (e.g. 'page 42')? Thank you for your patience!"
           }]);
           return;
         }
       }
-      // Verifica se siamo in modalità immagine (ma non stiamo già aspettando un numero di pagina)
+      // Check if we are in image mode (but not already waiting for a page number)
       else if (isImageMode) {
-        // Prova a estrarre il numero di pagina dal messaggio dell'utente
+        // Try to extract the page number from the user's message
         const detectedPageNumber = extractPageNumber(userMessage);
         
         if (detectedPageNumber) {
-          // Se è stato trovato un numero di pagina, invia direttamente la query con quel numero
+          // If a page number was found, send the query directly with that number
           await sendQueryToBackend(userMessage, detectedPageNumber);
         } else {
-          // Se non è stato trovato un numero di pagina, richiedi all'utente di inserirlo
+          // If no page number was found, ask the user to enter one
           setShowPageInput(true);
           setLoading(false);
           setMessages(prev => [...prev, { 
             type: 'bot', 
-            content: "📖 Per analizzare l'immagine che hai richiesto, avrei bisogno di sapere il numero di pagina. Potresti indicarmi quale pagina del documento desideri esaminare? Puoi scriverlo semplicemente come 'pagina 42' o solo '42', grazie!"
+            content: "📖 To analyze the image you requested, I would need to know the page number. Could you tell me which page of the document you want to examine? You can write it simply as 'page 42' or just '42', thanks!"
           }]);
           return;
         }
       }
       else {
-        // Normale flusso di domanda e risposta
+        // Normal question and answer flow
         await sendQueryToBackend(userMessage);
       }
     } catch (error) {
       console.error('Error sending message:', error);
       setMessages(prev => [...prev, { 
         type: 'error', 
-        content: 'Errore di connessione al server. Riprova più tardi.' 
+        content: 'Connection error to the server. Try again later.' 
       }]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Rimuovi la funzione handlePageSubmit che non è più necessaria
+  // Remove the handlePageSubmit function which is no longer needed
 
-  // Modifica sendQueryToBackend per gestire meglio la risposta quando serve una pagina
+  // Modify sendQueryToBackend to better handle the response when a page is needed
   const sendQueryToBackend = async (query, page = null) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/query`, {
@@ -305,28 +305,28 @@ function App() {
       if (response.data.status === 'success') {
         setMessages(prev => [...prev, { type: 'bot', content: response.data.response }]);
       } else if (response.data.status === 'page_required') {
-        // Invece di mostrare l'input separato, aggiungiamo un messaggio alla chat
+        // Instead of showing the separate input, add a message to the chat
         setMessages(prev => [...prev, { 
           type: 'bot', 
-          content: "📖 Ho bisogno di un piccolo aiuto: potresti indicarmi il numero di pagina dell'immagine che vorresti analizzare? Grazie!" 
+          content: "📖 I need a little help: could you tell me the page number of the image you would like to analyze? Thank you!" 
         }]);
         setShowPageInput(true);
       } else {
-        throw new Error(response.data.message || 'Errore sconosciuto');
+        throw new Error(response.data.message || 'Unknown error');
       }
     } catch (error) {
       console.error('API Error:', error);
       setMessages(prev => [...prev, { 
         type: 'error', 
-        content: `Errore: ${error.message}` 
+        content: `Error: ${error.message}` 
       }]);
     }
   };
 
-  // Funzione per attivare/disattivare la modalità immagine
+  // Function to activate/deactivate image mode
   const toggleImageMode = () => {
     setIsImageMode(prev => !prev);
-    // Se disattiviamo la modalità immagine, nascondi anche l'input della pagina
+    // If we deactivate image mode, also hide the page input
     if (isImageMode) {
       setShowPageInput(false);
       setPageNumber('');
@@ -360,12 +360,12 @@ function App() {
         </nav>
       </header>
       
-      {/* Sidebar Toggle - Spostato fuori dalla condizione showChat */}
+      {/* Sidebar Toggle - Moved outside the showChat condition */}
       <button className="sidebar-toggle" onClick={toggleSidebar}>
         {isSidebarOpen ? '✕' : '☰'}
       </button>
       
-      {/* Sidebar - Spostato fuori dalla condizione showChat */}
+      {/* Sidebar - Moved outside the showChat condition */}
       <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`} ref={sidebarRef}>
         <div className="sidebar-header">
           <h2>Academic Resources</h2>
@@ -380,32 +380,32 @@ function App() {
                   className="book-item selected"
                 >
                   <div className="book-icon">📚</div>
-                  <span>{book.name === "Reti e telecomunicazioni Pattavina" ? "Reti di telecomunicazioni" : book.name}</span>
+                  <span>{book.name === "Reti e telecomunicazioni Pattavina" ? "Telecommunications Networks" : book.name}</span>
                 </li>
               ))
             ) : (
-              <li className="no-books">Nessun libro caricato</li>
+              <li className="no-books">No books loaded</li>
             )}
           </ul>
           
-          {/* Aggiungi questa sezione per i libri fittizi */}
+          {/* Add this section for fictitious books */}
           <h3 className="sidebar-section-title">Available Materials</h3>
           <ul className="book-list">
             <li className="book-item">
               <div className="book-icon">📘</div>
-              <span>Analisi Matematica I</span>
+              <span>Mathematical Analysis I</span>
             </li>
             <li className="book-item">
               <div className="book-icon">📙</div>
-              <span>Reti di telecomunicazioni</span> {/* Titolo modificato qui */}
+              <span>Telecommunications Networks</span> {/* Modified title here */}
             </li>
             <li className="book-item">
               <div className="book-icon">📗</div>
-              <span>Fisica</span>
+              <span>Physics</span>
             </li>
             <li className="book-item">
               <div className="book-icon">📕</div>
-              <span>Economia e Organizzazione Aziendale</span>
+              <span>Business Economics and Organization</span>
             </li>
             <li className="book-item">
               <div className="book-icon">📓</div>
@@ -417,7 +417,7 @@ function App() {
             <div className="sidebar-error">
               <p>{error}</p>
               <button onClick={fetchAndSelectDefaultBook} className="reload-btn">
-                <FaRedo /> Riprova
+                <FaRedo /> Retry
               </button>
             </div>
           )}
@@ -442,7 +442,7 @@ function App() {
                 <div className="init-error">
                   <p>{error}</p>
                   <button onClick={fetchAndSelectDefaultBook} className="retry-btn">
-                    <FaRedo className="retry-icon" /> Riprova connessione
+                    <FaRedo className="retry-icon" /> Retry connection
                   </button>
                 </div>
               )}
@@ -491,13 +491,13 @@ function App() {
             <div className="messages-area">
               {messages.length === 0 ? (
                 <div className="welcome-message">
-                  <h2>Benvenuto nel tuo assistente di studio</h2>
-                  <p>Fai qualsiasi domanda sul materiale di studio</p>
+                  <h2>Welcome to your study assistant</h2>
+                  <p>Ask any question about the study material</p>
                   {error && (
                     <div className="init-error">
                       <p>{error}</p>
                       <button onClick={fetchAndSelectDefaultBook} className="retry-btn">
-                        <FaRedo className="retry-icon" /> Riprova connessione
+                        <FaRedo className="retry-icon" /> Retry connection
                       </button>
                     </div>
                   )}
@@ -544,7 +544,7 @@ function App() {
                 value={currentMessage}
                 onChange={(e) => setCurrentMessage(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder={isImageMode && showPageInput ? "Inserisci il numero di pagina..." : isImageMode ? "Descrivi cosa vuoi analizzare nell'immagine..." : "Scrivi la tua domanda..."}
+                placeholder={isImageMode && showPageInput ? "Enter the page number..." : isImageMode ? "Describe what you want to analyze in the image..." : "Write your question..."}
                 disabled={loading}
               />
               <button 
@@ -570,7 +570,7 @@ function App() {
       {error && !showChat && (
         <div className="error-notification">
           <p>{error}</p>
-          <button onClick={() => setError(null)}>Chiudi</button>
+          <button onClick={() => setError(null)}>Close</button>
         </div>
       )}
     </div>

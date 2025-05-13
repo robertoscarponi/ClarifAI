@@ -6,7 +6,7 @@ import time
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=20))
 def analyze_image(image_path):
     """Analizza un'immagine con Gemini e genera una descrizione dettagliata."""
-    # Aggiungi un ritardo di 6 secondi prima di ogni chiamata API
+    # Add a 6-second delay before each API call
     time.sleep(6)
     
     model = genai.GenerativeModel('gemini-1.5-flash')
